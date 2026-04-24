@@ -1,7 +1,3 @@
-This README is designed to highlight your technical proficiency (TypeScript/React) and your ability to integrate complex Google services. It’s structured to make a hackathon judge’s job easy by mapping directly to their evaluation criteria.
-
----
-
 # 🗳️ Electi-Smart: The AI-Driven Civic Assistant
 
 **Electi-Smart** is a smart, context-aware digital assistant designed to bridge the gap between complex election bureaucracies and the everyday voter. Developed for the **2026 Hackathon**, it leverages the **Google Cloud Ecosystem** to provide personalized, real-time guidance on the election process.
