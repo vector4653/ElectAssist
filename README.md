@@ -1,6 +1,3 @@
-This README is designed to highlight your technical proficiency (TypeScript/React) and your ability to integrate complex Google services. It’s structured to make a hackathon judge’s job easy by mapping directly to their evaluation criteria.
-
----
 
 # 🗳️ Electi-Smart: The AI-Driven Civic Assistant
 
