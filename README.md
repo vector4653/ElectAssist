@@ -1,3 +1,4 @@
+
 # 🗳️ Electi-Smart: The AI-Driven Civic Assistant
 
 **Electi-Smart** is a smart, context-aware digital assistant designed to bridge the gap between complex election bureaucracies and the everyday voter. Developed for the **2026 Hackathon**, it leverages the **Google Cloud Ecosystem** to provide personalized, real-time guidance on the election process.
