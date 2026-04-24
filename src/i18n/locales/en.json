@@ -1,0 +1,97 @@
+{
+  "app_name": "ElectAssist",
+  "tagline": "Your Smart Voting Companion",
+  "nav": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "language": "Language"
+  },
+  "hero": {
+    "title": "Vote Smart. Vote Informed.",
+    "subtitle": "Your AI-powered assistant for navigating Indian elections — from finding candidates to locating your polling booth.",
+    "cta": "Get Started",
+    "learn_more": "Learn More"
+  },
+  "how_it_works": {
+    "title": "How It Works",
+    "subtitle": "Three simple steps to become an informed voter",
+    "step1_title": "Know Your Candidates",
+    "step1_desc": "Get AI-summarized manifesto breakdowns and unbiased candidate comparisons for your constituency.",
+    "step2_title": "Find Your Booth",
+    "step2_desc": "Locate your nearest polling station with real-time navigation and estimated wait times.",
+    "step3_title": "Vote Smart",
+    "step3_desc": "Access your personalized voter roadmap with registration deadlines, documents needed, and more."
+  },
+  "features": {
+    "title": "Built for Every Indian Voter",
+    "subtitle": "Powerful features designed with accessibility and inclusivity at heart",
+    "multilingual": "Multilingual",
+    "multilingual_desc": "Available in 9+ Indian languages so every citizen can participate.",
+    "ai_powered": "AI-Powered",
+    "ai_powered_desc": "Gemini AI provides personalized, unbiased guidance tailored to you.",
+    "realtime": "Real-Time Info",
+    "realtime_desc": "Live candidate data, booth locations, and election updates at your fingertips.",
+    "privacy": "Privacy First",
+    "privacy_desc": "Your data stays on your device. We never share personal voter information."
+  },
+  "cta_section": {
+    "title": "Ready to Vote Smart?",
+    "subtitle": "Join thousands of informed voters. Create your account in under a minute.",
+    "register": "Create Free Account",
+    "login": "I Already Have an Account"
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to access your voter dashboard",
+    "email": "Email Address",
+    "email_placeholder": "your@email.com",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "submit": "Sign In",
+    "or": "or continue with",
+    "google": "Sign in with Google",
+    "no_account": "Don't have an account?",
+    "register_link": "Create one"
+  },
+  "register": {
+    "title": "Create Your Account",
+    "subtitle": "Join ElectAssist and become an informed voter",
+    "step1_title": "Account Setup",
+    "step2_title": "Your Profile",
+    "step3_title": "Language Preference",
+    "email": "Email Address",
+    "email_placeholder": "your@email.com",
+    "password": "Password",
+    "password_placeholder": "Create a strong password",
+    "confirm_password": "Confirm Password",
+    "confirm_placeholder": "Re-enter your password",
+    "full_name": "Full Name",
+    "name_placeholder": "Enter your full name",
+    "age": "Age",
+    "age_placeholder": "Your age",
+    "voter_id": "Voter ID (EPIC Number)",
+    "voter_id_placeholder": "e.g. ABC1234567",
+    "state": "State / Union Territory",
+    "state_placeholder": "Select your state",
+    "language_detect": "Based on your state, you might prefer",
+    "language_question": "Would you like to switch to {{language}}?",
+    "switch_language": "Yes, switch to {{language}}",
+    "keep_english": "No, keep English",
+    "next": "Next",
+    "back": "Back",
+    "submit": "Create Account",
+    "or": "or",
+    "google": "Sign up with Google",
+    "have_account": "Already have an account?",
+    "login_link": "Sign in",
+    "age_error": "You must be at least 18 years old to register as a voter.",
+    "voter_id_error": "Voter ID should be 3 letters followed by 7 digits (e.g. ABC1234567)",
+    "password_mismatch": "Passwords do not match",
+    "password_weak": "Password must be at least 6 characters"
+  },
+  "footer": {
+    "made_with": "Made with ❤️ for India",
+    "hackathon": "2026 Hackathon Project"
+  }
+}
