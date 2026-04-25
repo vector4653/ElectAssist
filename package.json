@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.0",
     "@tailwindcss/vite": "^4.2.4",
+    "@types/three": "^0.184.0",
     "firebase": "^12.12.1",
     "framer-motion": "^12.38.0",
     "i18next": "^26.0.7",
@@ -19,7 +22,8 @@
     "react-dom": "^19.2.5",
     "react-i18next": "^17.0.4",
     "react-router-dom": "^7.14.2",
-    "tailwindcss": "^4.2.4"
+    "tailwindcss": "^4.2.4",
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

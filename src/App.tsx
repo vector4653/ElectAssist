@@ -38,6 +38,8 @@ function AppRoutes() {
             <Dashboard />
           </ProtectedRoute>
         } />
+        {/* Temporary test route – remove after verification */}
+        <Route path="/globe-test" element={<Dashboard />} />
       </Routes>
     </>
   );
