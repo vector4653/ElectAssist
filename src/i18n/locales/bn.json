@@ -5,7 +5,8 @@
     "login": "লগইন",
     "register": "নিবন্ধন",
     "logout": "লগআউট",
-    "language": "ভাষা"
+    "language": "ভাষা",
+    "go_to_dashboard": "ড্যাশবোর্ডে যান"
   },
   "hero": {
     "title": "বুদ্ধিমত্তার সাথে ভোট দিন।",

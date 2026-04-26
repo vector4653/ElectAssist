@@ -5,7 +5,8 @@
     "login": "લૉગિન",
     "register": "નોંધણી",
     "logout": "લૉગઆઉટ",
-    "language": "ભાષા"
+    "language": "ભાષા",
+    "go_to_dashboard": "ડેશબોર્ડ પર જાઓ"
   },
   "hero": {
     "title": "સમજદારીથી મતદાન કરો.",

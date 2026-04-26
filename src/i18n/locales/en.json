@@ -5,7 +5,8 @@
     "login": "Login",
     "register": "Register",
     "logout": "Logout",
-    "language": "Language"
+    "language": "Language",
+    "go_to_dashboard": "Go to Dashboard"
   },
   "hero": {
     "title": "Vote Smart. Vote Informed.",

@@ -5,7 +5,8 @@
     "login": "లాగిన్",
     "register": "నమోదు",
     "logout": "లాగౌట్",
-    "language": "భాష"
+    "language": "భాష",
+    "go_to_dashboard": "డాష్‌బోర్డ్‌కు వెళ్లండి"
   },
   "hero": {
     "title": "తెలివిగా ఓటు వేయండి.",

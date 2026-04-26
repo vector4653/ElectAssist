@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import ScrollSection from '../components/ScrollSection';
 
@@ -7,6 +8,7 @@ const FEATURE_ICONS = ['🌐', '🤖', '⚡', '🛡️'];
 
 export default function Landing() {
   const { t } = useTranslation();
+  const { user } = useAuth();
 
   return (
     <div style={{ position: 'relative', overflow: 'hidden' }}>
@@ -75,16 +77,26 @@ export default function Landing() {
             </p>
 
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link to="/register">
-                <button id="hero-cta-btn" className="btn-primary" style={{ fontSize: '1.1rem', padding: '16px 40px' }}>
-                  {t('hero.cta')} →
-                </button>
-              </Link>
-              <a href="#how-it-works">
-                <button id="hero-learn-btn" className="btn-outline" style={{ fontSize: '1.1rem', padding: '16px 40px' }}>
-                  {t('hero.learn_more')}
-                </button>
-              </a>
+              {user ? (
+                <Link to="/dashboard">
+                  <button id="hero-cta-btn" className="btn-primary" style={{ fontSize: '1.1rem', padding: '16px 40px' }}>
+                    {t('nav.go_to_dashboard')} →
+                  </button>
+                </Link>
+              ) : (
+                <>
+                  <Link to="/register">
+                    <button id="hero-cta-btn" className="btn-primary" style={{ fontSize: '1.1rem', padding: '16px 40px' }}>
+                      {t('hero.cta')} →
+                    </button>
+                  </Link>
+                  <a href="#how-it-works">
+                    <button id="hero-learn-btn" className="btn-outline" style={{ fontSize: '1.1rem', padding: '16px 40px' }}>
+                      {t('hero.learn_more')}
+                    </button>
+                  </a>
+                </>
+              )}
             </div>
           </motion.div>
 
@@ -285,16 +297,26 @@ export default function Landing() {
                 {t('cta_section.subtitle')}
               </p>
               <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', position: 'relative' }}>
-                <Link to="/register">
-                  <button id="cta-register-btn" className="btn-primary" style={{ fontSize: '1.05rem', padding: '14px 36px' }}>
-                    {t('cta_section.register')}
-                  </button>
-                </Link>
-                <Link to="/login">
-                  <button id="cta-login-btn" className="btn-outline" style={{ fontSize: '1.05rem', padding: '14px 36px' }}>
-                    {t('cta_section.login')}
-                  </button>
-                </Link>
+                {user ? (
+                  <Link to="/dashboard">
+                    <button id="cta-dashboard-btn" className="btn-primary" style={{ fontSize: '1.05rem', padding: '14px 36px' }}>
+                      {t('nav.go_to_dashboard')} →
+                    </button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link to="/register">
+                      <button id="cta-register-btn" className="btn-primary" style={{ fontSize: '1.05rem', padding: '14px 36px' }}>
+                        {t('cta_section.register')}
+                      </button>
+                    </Link>
+                    <Link to="/login">
+                      <button id="cta-login-btn" className="btn-outline" style={{ fontSize: '1.05rem', padding: '14px 36px' }}>
+                        {t('cta_section.login')}
+                      </button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </ScrollSection>

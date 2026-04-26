@@ -5,7 +5,8 @@
     "login": "लॉगिन",
     "register": "नोंदणी",
     "logout": "लॉगआउट",
-    "language": "भाषा"
+    "language": "भाषा",
+    "go_to_dashboard": "डॅशबोर्डवर जा"
   },
   "hero": {
     "title": "स्मार्टपणे मतदान करा.",
