@@ -93,5 +93,35 @@
   "footer": {
     "made_with": "Made with ❤️ for India",
     "hackathon": "2026 Hackathon Project"
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "welcome_name": "Welcome, {{name}}",
+    "initializing_globe": "Initializing 3D Globe…",
+    "analytics_desc": "Content and analytics for <strong style='color:#fff'>{{state}}</strong> will be displayed here.",
+    "total_constituencies": "Total Constituencies",
+    "registered_voters": "Registered Voters",
+    "upcoming_features": "Upcoming Features",
+    "feature_live": "Live election results and vote counting",
+    "feature_demo": "Demographic distribution heatmaps",
+    "feature_trends": "Historical voting trends",
+    "explore_globe": "Explore India's states on the interactive globe below",
+    "your_state": "Your State",
+    "email": "Email",
+    "voter_id": "Voter ID",
+    "not_provided": "Not provided",
+    "language": "Language",
+    "age": "Age",
+    "years": "{{count}} years"
+  },
+  "globe": {
+    "loading_map": "Loading India Map…",
+    "failed_load": "Failed to load map: {{error}}",
+    "your_state": "Your State",
+    "other_states": "Other States",
+    "click_close": "🖱️ Click anywhere to close",
+    "click_state": "🖱️ Click a state to view constituencies",
+    "constituency": "Constituency: {{name}}",
+    "state": "State: {{name}}"
   }
 }

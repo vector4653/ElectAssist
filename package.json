@@ -23,13 +23,15 @@
     "react-i18next": "^17.0.4",
     "react-router-dom": "^7.14.2",
     "tailwindcss": "^4.2.4",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "topojson-client": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^6.0.1",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",

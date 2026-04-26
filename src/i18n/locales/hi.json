@@ -93,5 +93,35 @@
   "footer": {
     "made_with": "❤️ से भारत के लिए बनाया गया",
     "hackathon": "2026 हैकाथॉन प्रोजेक्ट"
+  },
+  "dashboard": {
+    "welcome": "स्वागत है",
+    "welcome_name": "स्वागत है, {{name}}",
+    "initializing_globe": "3D ग्लोब प्रारंभ किया जा रहा है…",
+    "analytics_desc": "<strong style='color:#fff'>{{state}}</strong> के लिए सामग्री और विश्लेषिकी यहां प्रदर्शित की जाएगी।",
+    "total_constituencies": "कुल निर्वाचन क्षेत्र",
+    "registered_voters": "पंजीकृत मतदाता",
+    "upcoming_features": "आगामी सुविधाएँ",
+    "feature_live": "लाइव चुनाव परिणाम और मतगणना",
+    "feature_demo": "जनसांख्यिकीय वितरण हीटमैप",
+    "feature_trends": "ऐतिहासिक मतदान प्रवृत्तियाँ",
+    "explore_globe": "नीचे दिए गए इंटरैक्टिव ग्लोब पर भारत के राज्यों का अन्वेषण करें",
+    "your_state": "आपका राज्य",
+    "email": "ईमेल",
+    "voter_id": "वोटर आईडी",
+    "not_provided": "प्रदान नहीं किया गया",
+    "language": "भाषा",
+    "age": "आयु",
+    "years": "{{count}} वर्ष"
+  },
+  "globe": {
+    "loading_map": "भारत का नक्शा लोड हो रहा है…",
+    "failed_load": "नक्शा लोड करने में विफल: {{error}}",
+    "your_state": "आपका राज्य",
+    "other_states": "अन्य राज्य",
+    "click_close": "🖱️ बंद करने के लिए कहीं भी क्लिक करें",
+    "click_state": "🖱️ निर्वाचन क्षेत्र देखने के लिए एक राज्य पर क्लिक करें",
+    "constituency": "निर्वाचन क्षेत्र: {{name}}",
+    "state": "राज्य: {{name}}"
   }
 }

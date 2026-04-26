@@ -1,11 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import { motion } from 'framer-motion';
-import { Suspense, lazy } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Suspense, lazy, useState } from 'react';
 
 const IndiaGlobe = lazy(() => import('../components/IndiaGlobe/IndiaGlobe'));
 
 function GlobeLoader() {
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -29,7 +30,7 @@ function GlobeLoader() {
         }}
       />
       <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
-        Initializing 3D Globe…
+        {t('dashboard.initializing_globe')}
       </p>
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
@@ -37,12 +38,13 @@ function GlobeLoader() {
 }
 
 export default function Dashboard() {
-  const { t } = useTranslation();
   const { user, profile } = useAuth();
+  const { t } = useTranslation();
+  const [activeState, setActiveState] = useState<string | null>(null);
 
   const greeting = profile?.fullName
-    ? `Welcome, ${profile.fullName}`
-    : 'Welcome!';
+    ? t('dashboard.welcome_name', { name: profile.fullName })
+    : t('dashboard.welcome');
 
   return (
     <div
@@ -103,7 +105,7 @@ export default function Dashboard() {
                   fontSize: '0.95rem',
                 }}
               >
-                Explore India's states on the interactive globe below
+                {t('dashboard.explore_globe')}
               </p>
             </div>
 
@@ -135,7 +137,7 @@ export default function Dashboard() {
                       letterSpacing: '0.5px',
                     }}
                   >
-                    Your State
+                    {t('dashboard.your_state')}
                   </p>
                   <p
                     style={{
@@ -152,27 +154,88 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Globe section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          style={{
-            width: '100%',
-            height: 'clamp(400px, 65vh, 700px)',
-            borderRadius: '24px',
-            overflow: 'hidden',
-            background: 'radial-gradient(ellipse at center, #0f172a 0%, #020617 100%)',
-            border: '1px solid rgba(241, 245, 249, 0.06)',
-            boxShadow:
-              '0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
-            position: 'relative',
-          }}
-        >
-          <Suspense fallback={<GlobeLoader />}>
-            <IndiaGlobe userState={profile?.state} />
-          </Suspense>
-        </motion.div>
+        {/* Container for Globe and Side Panel */}
+        <div style={{ display: 'flex', width: '100%', height: activeState ? '100vh' : 'clamp(400px, 65vh, 700px)', transition: 'height 0.6s ease-in-out' }}>
+          
+          {/* Globe section */}
+          <div
+            style={{
+              flex: activeState ? '0 0 55%' : '1',
+              borderRadius: activeState ? '0px' : '24px',
+              position: activeState ? 'fixed' : 'relative',
+              top: activeState ? 0 : 'auto',
+              left: activeState ? 0 : 'auto',
+              width: activeState ? '55%' : '100%',
+              height: activeState ? '100vh' : '100%',
+              zIndex: activeState ? 50 : 1,
+              border: activeState ? 'none' : '1px solid rgba(241, 245, 249, 0.06)',
+              overflow: 'hidden',
+              background: 'radial-gradient(ellipse at center, #0f172a 0%, #020617 100%)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)',
+              transition: 'all 0.6s ease-in-out',
+            }}
+          >
+            <Suspense fallback={<GlobeLoader />}>
+              <IndiaGlobe userState={profile?.state} onStateSelect={setActiveState} />
+            </Suspense>
+          </div>
+
+          {/* Right hand side content panel */}
+          <AnimatePresence>
+            {activeState && (
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 50 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                style={{
+                  position: 'fixed',
+                  top: 0,
+                  right: 0,
+                  width: '45%',
+                  height: '100vh',
+                  background: 'rgba(15, 23, 42, 0.98)',
+                  borderLeft: '1px solid rgba(241, 245, 249, 0.08)',
+                  padding: '60px 40px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  overflowY: 'auto',
+                  zIndex: 50,
+                  boxShadow: '-10px 0 30px rgba(0,0,0,0.5)'
+                }}
+              >
+                <h2 style={{ fontSize: '2.5rem', color: '#f8fafc', marginBottom: '8px' }}>{activeState}</h2>
+                <div style={{ width: '60px', height: '4px', background: '#3b82f6', borderRadius: '2px', marginBottom: '32px' }} />
+                
+                <p style={{ color: '#94a3b8', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '24px' }} 
+                   dangerouslySetInnerHTML={{ __html: t('dashboard.analytics_desc', { state: activeState }) }} 
+                />
+
+                {/* Placeholder Stats */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>{t('dashboard.total_constituencies')}</div>
+                    <div style={{ fontSize: '1.8rem', color: '#f1f5f9', fontWeight: 600 }}>-</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>{t('dashboard.registered_voters')}</div>
+                    <div style={{ fontSize: '1.8rem', color: '#f1f5f9', fontWeight: 600 }}>-</div>
+                  </div>
+                </div>
+
+                <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                  <h3 style={{ color: '#60a5fa', marginBottom: '8px', fontSize: '1.1rem' }}>{t('dashboard.upcoming_features')}</h3>
+                  <ul style={{ color: '#94a3b8', paddingLeft: '20px', lineHeight: 1.8, fontSize: '0.95rem' }}>
+                    <li>{t('dashboard.feature_live')}</li>
+                    <li>{t('dashboard.feature_demo')}</li>
+                    <li>{t('dashboard.feature_trends')}</li>
+                  </ul>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+        </div>
 
         {/* Info cards below globe */}
         {profile && (
@@ -190,23 +253,23 @@ export default function Dashboard() {
             {[
               {
                 icon: '✉️',
-                label: 'Email',
+                label: t('dashboard.email'),
                 value: user?.email ?? '—',
               },
               {
                 icon: '🗳️',
-                label: 'Voter ID',
-                value: profile.voterId || 'Not provided',
+                label: t('dashboard.voter_id'),
+                value: profile.voterId || t('dashboard.not_provided'),
               },
               {
                 icon: '🌐',
-                label: 'Language',
+                label: t('dashboard.language'),
                 value: profile.language?.toUpperCase() ?? 'EN',
               },
               {
                 icon: '🎂',
-                label: 'Age',
-                value: profile.age ? `${profile.age} years` : '—',
+                label: t('dashboard.age'),
+                value: profile.age ? t('dashboard.years', { count: profile.age }) : '—',
               },
             ].map((item) => (
               <div
