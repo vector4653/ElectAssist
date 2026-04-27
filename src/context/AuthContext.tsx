@@ -48,6 +48,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const docSnap = await getDoc(doc(db, 'users', firebaseUser.uid));
             if (docSnap.exists()) {
               setProfile(docSnap.data() as UserProfile);
+            } else {
+              const initialProfile: UserProfile = {
+                fullName: firebaseUser.displayName || 'User',
+                age: 0,
+                voterId: '',
+                state: '',
+                language: 'en',
+                createdAt: new Date().toISOString()
+              };
+              await setDoc(doc(db, 'users', firebaseUser.uid), initialProfile);
+              setProfile(initialProfile);
             }
           } catch (e) {
             console.warn('Error fetching profile:', e);
@@ -85,6 +96,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginWithGoogle = async () => {
     if (!isFirebaseConfigured) throw new Error('Firebase is not configured. Please set up your .env file.');
     const cred = await signInWithPopup(auth, googleProvider);
+    
+    // Check if profile exists, if not create one using Google info
+    if (isFirebaseConfigured && cred.user) {
+      try {
+        const docRef = doc(db, 'users', cred.user.uid);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+          const initialProfile: UserProfile = {
+            fullName: cred.user.displayName || 'User',
+            age: 0,
+            voterId: '',
+            state: '',
+            language: 'en',
+            createdAt: new Date().toISOString()
+          };
+          await setDoc(docRef, initialProfile);
+          setProfile(initialProfile);
+        } else {
+          setProfile(docSnap.data() as UserProfile);
+        }
+      } catch (e) {
+        console.warn('Could not initialize Google user profile', e);
+      }
+    }
+    
     return cred.user;
   };
 

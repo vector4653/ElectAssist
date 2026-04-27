@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Suspense, lazy, useState } from 'react';
+import { STATE_POLITICAL_DATA, PARTY_LOGOS } from '../data/politicalData';
+import OnboardingModal from '../components/OnboardingModal';
 
 const IndiaGlobe = lazy(() => import('../components/IndiaGlobe/IndiaGlobe'));
 
@@ -41,13 +43,21 @@ export default function Dashboard() {
   const { user, profile } = useAuth();
   const { t } = useTranslation();
   const [activeState, setActiveState] = useState<string | null>(null);
+  
+  const politicalData = activeState ? STATE_POLITICAL_DATA[activeState] : null;
+  const partyLogo = politicalData ? PARTY_LOGOS[politicalData.rulingParty] : null;
 
-  const greeting = profile?.fullName
-    ? t('dashboard.welcome_name', { name: profile.fullName })
+  const displayName = profile?.fullName || user?.displayName;
+  const greeting = displayName
+    ? t('dashboard.welcome_name', { name: displayName })
     : t('dashboard.welcome');
 
+  const needsOnboarding = profile && (!profile.age || !profile.state);
+
   return (
-    <div
+    <>
+      {needsOnboarding && <OnboardingModal />}
+      <div
       style={{
         minHeight: '100vh',
         padding: '80px 24px 40px',
@@ -159,6 +169,7 @@ export default function Dashboard() {
           
           {/* Globe section */}
           <div
+            className={`dashboard-globe-container ${activeState ? 'state-active' : ''}`}
             style={{
               flex: activeState ? '0 0 55%' : '1',
               borderRadius: activeState ? '0px' : '24px',
@@ -184,6 +195,7 @@ export default function Dashboard() {
           <AnimatePresence>
             {activeState && (
               <motion.div
+                className="dashboard-panel"
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 50 }}
@@ -196,7 +208,7 @@ export default function Dashboard() {
                   height: '100vh',
                   background: 'rgba(15, 23, 42, 0.98)',
                   borderLeft: '1px solid rgba(241, 245, 249, 0.08)',
-                  padding: '60px 40px',
+                  padding: '120px 40px 60px',
                   display: 'flex',
                   flexDirection: 'column',
                   overflowY: 'auto',
@@ -212,14 +224,34 @@ export default function Dashboard() {
                 />
 
                 {/* Placeholder Stats */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+                <div className="dashboard-stats-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
                   <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>{t('dashboard.total_constituencies')}</div>
-                    <div style={{ fontSize: '1.8rem', color: '#f1f5f9', fontWeight: 600 }}>-</div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>Chief Minister</div>
+                    <div style={{ fontSize: '1.2rem', color: '#f1f5f9', fontWeight: 600 }}>{politicalData?.chiefMinister || '—'}</div>
                   </div>
                   <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>{t('dashboard.registered_voters')}</div>
-                    <div style={{ fontSize: '1.8rem', color: '#f1f5f9', fontWeight: 600 }}>-</div>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>Ruling Party</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      {partyLogo && (
+                        <div style={{ background: '#fff', borderRadius: '50%', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <img 
+                            src={partyLogo} 
+                            alt={`${politicalData?.rulingParty} logo`} 
+                            style={{ width: '28px', height: '28px', objectFit: 'contain' }}
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        </div>
+                      )}
+                      <div style={{ fontSize: '1.2rem', color: '#f1f5f9', fontWeight: 600 }}>{politicalData?.rulingParty || '—'}</div>
+                    </div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>Assembly Seats</div>
+                    <div style={{ fontSize: '1.8rem', color: '#f1f5f9', fontWeight: 600 }}>{politicalData?.assemblySeats || '—'}</div>
+                  </div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>Lok Sabha Seats</div>
+                    <div style={{ fontSize: '1.8rem', color: '#f1f5f9', fontWeight: 600 }}>{politicalData?.lokSabhaSeats || '—'}</div>
                   </div>
                 </div>
 
@@ -327,5 +359,6 @@ export default function Dashboard() {
         )}
       </div>
     </div>
+    </>
   );
 }

@@ -392,8 +392,11 @@ function InteractiveScene({
   setSelectedState: (name: string | null) => void;
 }) {
   const mainGlobeRef = useRef<THREE.Group>(null);
+  const flattenRef = useRef<THREE.Group>(null);
   const detachedStateRef = useRef<THREE.Group>(null);
   const controlsRef = useRef<any>(null);
+  const savedCameraPosRef = useRef<THREE.Vector3 | null>(null);
+  const isReturningCameraRef = useRef(false);
 
   const selectedCentroid = useMemo(() => {
     if (!selectedState || stateGroups.length === 0) return null;
@@ -417,8 +420,37 @@ function InteractiveScene({
     return districtGroups.filter((g) => g.parentState === selectedState);
   }, [districtGroups, selectedState]);
 
+  // Disable rotation when a state is selected, but keep zoom enabled
+  useEffect(() => {
+    if (controlsRef.current) {
+      controlsRef.current.enabled = true; // Ensure it's enabled (fixes HMR state bugs)
+      controlsRef.current.enableRotate = !selectedState;
+
+      if (selectedState) {
+        // Save the camera position when entering the 2D view
+        if (!savedCameraPosRef.current) {
+          savedCameraPosRef.current = controlsRef.current.object.position.clone();
+        }
+        isReturningCameraRef.current = false;
+      } else {
+        // Trigger a smooth return when dismissing
+        isReturningCameraRef.current = true;
+      }
+    }
+  }, [selectedState]);
+
   // Animation loop
-  useFrame(() => {
+  useFrame((state) => {
+    // Smoothly return the camera to its original distance
+    if (isReturningCameraRef.current && savedCameraPosRef.current) {
+      state.camera.position.lerp(savedCameraPosRef.current, 0.1);
+      if (controlsRef.current) controlsRef.current.update();
+      if (state.camera.position.distanceTo(savedCameraPosRef.current) < 0.05) {
+        isReturningCameraRef.current = false;
+        savedCameraPosRef.current = null;
+      }
+    }
+
     // If a state is selected, the main globe hides, and the selected state group rotates 
     // to face the camera and scales up. This avoids fighting OrbitControls.
     if (mainGlobeRef.current) {
@@ -427,22 +459,34 @@ function InteractiveScene({
       mainGlobeRef.current.visible = mainGlobeRef.current.scale.x > 0.05 || !selectedState;
     }
 
-    if (detachedStateRef.current) {
+    if (flattenRef.current && detachedStateRef.current) {
       if (selectedState && selectedCentroid) {
-        // Find rotation needed to move centroid to (0, 0, GLOBE_RADIUS)
+        // Find rotation needed to move centroid to face the camera
         const currentCentroid = selectedCentroid.clone();
-        const targetPoint = new THREE.Vector3(0, 0, GLOBE_RADIUS);
+        const targetPoint = state.camera.position.clone().normalize();
         
         const q = new THREE.Quaternion().setFromUnitVectors(
           currentCentroid.normalize(),
-          targetPoint.normalize()
+          targetPoint
         );
 
-        // Apply rotation and scale up so it "takes up the screen"
-        detachedStateRef.current.quaternion.slerp(q, 0.08);
-        detachedStateRef.current.scale.lerp(new THREE.Vector3(1.7, 1.7, 1.7), 0.08);
+        // Parent container faces the camera and squashes the Z axis to 2D
+        const parentTargetQuat = state.camera.quaternion.clone();
+        flattenRef.current.quaternion.slerp(parentTargetQuat, 0.08);
+        flattenRef.current.scale.lerp(new THREE.Vector3(1, 1, 0.005), 0.08);
+
+        // Child object rotates so its centroid points at the camera
+        // qLocal = parentInv * q
+        const parentInv = parentTargetQuat.clone().invert();
+        const qLocal = parentInv.multiply(q);
+
+        detachedStateRef.current.quaternion.slerp(qLocal, 0.08);
+        detachedStateRef.current.scale.lerp(new THREE.Vector3(2.8, 2.8, 2.8), 0.08);
       } else {
         // Return to original state
+        flattenRef.current.quaternion.slerp(new THREE.Quaternion(), 0.08);
+        flattenRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.08);
+
         detachedStateRef.current.quaternion.slerp(new THREE.Quaternion(), 0.08);
         detachedStateRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.08);
       }
@@ -480,26 +524,28 @@ function InteractiveScene({
       </group>
 
       {/* Detached State */}
-      <group ref={detachedStateRef}>
-        {selectedState && (
-          <>
-            <MapFills
-              groups={detachedDistricts}
-              userState={userState}
-              isStateLevel={false}
-              hoveredEntity={hoveredEntity}
-              onHover={setHoveredEntity}
-              onClick={() => setSelectedState(null)} // click again to dismiss
-            />
-            <MapBorders
-              groups={detachedDistricts}
-              userState={userState}
-              isStateLevel={false}
-              hoveredEntity={hoveredEntity}
-              opacityMultiplier={1.0}
-            />
-          </>
-        )}
+      <group ref={flattenRef}>
+        <group ref={detachedStateRef}>
+          {selectedState && (
+            <>
+              <MapFills
+                groups={detachedDistricts}
+                userState={userState}
+                isStateLevel={false}
+                hoveredEntity={hoveredEntity}
+                onHover={setHoveredEntity}
+                onClick={() => setSelectedState(null)} // click again to dismiss
+              />
+              <MapBorders
+                groups={detachedDistricts}
+                userState={userState}
+                isStateLevel={false}
+                hoveredEntity={hoveredEntity}
+                opacityMultiplier={1.0}
+              />
+            </>
+          )}
+        </group>
       </group>
 
       <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={0.5} />

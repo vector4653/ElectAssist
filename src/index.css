@@ -332,3 +332,33 @@ img {
   height: 1px;
   background: var(--glass-border);
 }
+
+/* ===== Mobile Responsiveness ===== */
+@media (max-width: 768px) {
+  .dashboard-globe-container.state-active {
+    width: 100% !important;
+    height: 50vh !important;
+  }
+
+  .dashboard-panel {
+    width: 100% !important;
+    height: 50vh !important;
+    top: auto !important;
+    bottom: 0 !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(241, 245, 249, 0.08) !important;
+    padding: 30px 24px 80px !important;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.5) !important;
+  }
+
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .modal-container {
+    padding: 30px 24px !important;
+    border-radius: 20px !important;
+  }
+}
+
