@@ -97,7 +97,7 @@ function buildLinesData(
   let idx = 0;
 
   for (const group of groups) {
-    const isUser = isStateLevel ? group.name === userState : group.parentState === userState;
+    const isUser = isStateLevel ? group.name === userState : false;
     const isHovered = hoveredEntity === group.name;
 
     for (const ring of group.rings) {
@@ -128,7 +128,7 @@ function buildFillsData(
   let idx = 0;
 
   for (const group of groups) {
-    const isUser = isStateLevel ? group.name === userState : group.parentState === userState;
+    const isUser = isStateLevel ? group.name === userState : false;
 
     for (const ring of group.rings) {
       const simplified = simplifyCoords(ring, isUser ? 1 : 3);
@@ -398,20 +398,42 @@ function InteractiveScene({
   const savedCameraPosRef = useRef<THREE.Vector3 | null>(null);
   const isReturningCameraRef = useRef(false);
 
-  const selectedCentroid = useMemo(() => {
-    if (!selectedState || stateGroups.length === 0) return null;
+  const { selectedCentroid, dynamicScale } = useMemo(() => {
+    if (!selectedState || stateGroups.length === 0) return { selectedCentroid: null, dynamicScale: 2.8 };
     const group = stateGroups.find(g => g.name === selectedState);
-    if (!group) return null;
+    if (!group) return { selectedCentroid: null, dynamicScale: 2.8 };
+    
     let latSum = 0, lngSum = 0, count = 0;
+    let minLat = Infinity, maxLat = -Infinity;
+    let minLng = Infinity, maxLng = -Infinity;
+    
     group.rings.forEach(ring => {
       ring.forEach(([lng, lat]) => {
         latSum += lat;
         lngSum += lng;
         count++;
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+        if (lng < minLng) minLng = lng;
+        if (lng > maxLng) maxLng = lng;
       });
     });
-    if (count === 0) return null;
-    return latLngToVector3(latSum/count, lngSum/count, GLOBE_RADIUS, 0);
+    
+    if (count === 0) return { selectedCentroid: null, dynamicScale: 2.8 };
+    
+    const latDiff = maxLat - minLat;
+    const lngDiff = maxLng - minLng;
+    const maxDiff = Math.max(latDiff, lngDiff);
+    
+    // Scale inversely proportional to the bounding box size
+    let scale = 22 / maxDiff; 
+    // Clamp between 1.5 (huge states) and 40 (tiny states like Delhi)
+    scale = Math.max(1.5, Math.min(scale, 40));
+
+    return {
+      selectedCentroid: latLngToVector3(latSum/count, lngSum/count, GLOBE_RADIUS, 0),
+      dynamicScale: scale
+    };
   }, [selectedState, stateGroups]);
 
   // When a state is selected, filter out its districts
@@ -481,7 +503,7 @@ function InteractiveScene({
         const qLocal = parentInv.multiply(q);
 
         detachedStateRef.current.quaternion.slerp(qLocal, 0.08);
-        detachedStateRef.current.scale.lerp(new THREE.Vector3(2.8, 2.8, 2.8), 0.08);
+        detachedStateRef.current.scale.lerp(new THREE.Vector3(dynamicScale, dynamicScale, dynamicScale), 0.08);
       } else {
         // Return to original state
         flattenRef.current.quaternion.slerp(new THREE.Quaternion(), 0.08);

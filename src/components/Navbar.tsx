@@ -4,11 +4,13 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import LanguageSelector from './LanguageSelector';
 import { useAuth } from '../context/AuthContext';
+import EditProfileModal from './EditProfileModal';
 
 export default function Navbar() {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, profile } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === '/';
 
@@ -23,6 +25,7 @@ export default function Navbar() {
     : 'transparent';
 
   return (
+    <>
     <motion.nav
       id="main-navbar"
       initial={{ y: -80 }}
@@ -69,12 +72,31 @@ export default function Navbar() {
 
         {user ? (
           <button
-            id="logout-btn"
-            onClick={logout}
-            className="btn-outline"
-            style={{ padding: '8px 20px', fontSize: '0.9rem' }}
+            id="profile-btn"
+            onClick={() => setShowProfileModal(true)}
+            style={{
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              overflow: 'hidden',
+              padding: 0
+            }}
           >
-            {t('nav.logout')}
+            {profile?.photoURL ? (
+              <img src={profile.photoURL} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f8fafc" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            )}
           </button>
         ) : (
           <>
@@ -100,5 +122,8 @@ export default function Navbar() {
         )}
       </div>
     </motion.nav>
+
+    {showProfileModal && <EditProfileModal onClose={() => setShowProfileModal(false)} />}
+    </>
   );
 }

@@ -9,7 +9,7 @@ export const PARTY_LOGOS: Record<string, string> = {
   "BJP": "https://commons.wikimedia.org/wiki/Special:FilePath/Logo_of_the_Bharatiya_Janata_Party.svg",
   "INC": "https://commons.wikimedia.org/wiki/Special:FilePath/Indian_National_Congress_hand_logo.svg",
   "AAP": "https://commons.wikimedia.org/wiki/Special:FilePath/Aam_Aadmi_Party_logo_%28English%29.svg",
-  "YSRCP": "https://commons.wikimedia.org/wiki/Special:FilePath/Ceiling_fan.svg",
+  "TDP": "https://commons.wikimedia.org/wiki/Special:FilePath/Telugu_Desam_Party_Flag.png",
   "JDU-BJP": "https://commons.wikimedia.org/wiki/Special:FilePath/Logo_of_the_Bharatiya_Janata_Party.svg",
   "JMM-INC": "https://commons.wikimedia.org/wiki/Special:FilePath/Indian_National_Congress_hand_logo.svg",
   "LDF (CPI-M)": "https://commons.wikimedia.org/wiki/Special:FilePath/Hammer_and_sickle_red_on_transparent.svg",
@@ -17,18 +17,18 @@ export const PARTY_LOGOS: Record<string, string> = {
   "NPP": "https://commons.wikimedia.org/wiki/Special:FilePath/Book_symbol.svg",
   "ZPM": "https://commons.wikimedia.org/wiki/Special:FilePath/A_hat_or_topi.png",
   "NDPP": "https://commons.wikimedia.org/wiki/Special:FilePath/Globe_symbol.svg",
-  "BJD": "https://commons.wikimedia.org/wiki/Special:FilePath/Indian_Election_Symbol_Conch.svg",
   "SKM": "https://commons.wikimedia.org/wiki/Special:FilePath/Table_lamp_symbol.svg",
-  "DMK": "https://commons.wikimedia.org/wiki/Special:FilePath/Rising_sun_symbol.svg",
+  "DMK": "https://en.wikipedia.org/wiki/Special:FilePath/Dravida_Munnetra_Kazhagam_logo.png",
   "TMC": "https://commons.wikimedia.org/wiki/Special:FilePath/All_India_Trinamool_Congress_flag.svg",
   "AINRC": "https://commons.wikimedia.org/wiki/Special:FilePath/Jug_symbol.svg",
+  "JKNC": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Jammu_and_Kashmir_National_Conference.svg",
   "President's Rule": "https://commons.wikimedia.org/wiki/Special:FilePath/Emblem_of_India.svg"
 };
 
 export const STATE_POLITICAL_DATA: Record<string, PoliticalData> = {
   "Andhra Pradesh": {
-    rulingParty: "YSRCP",
-    chiefMinister: "Y. S. Jagan Mohan Reddy",
+    rulingParty: "TDP",
+    chiefMinister: "N. Chandrababu Naidu",
     assemblySeats: 175,
     lokSabhaSeats: 25
   },
@@ -82,7 +82,7 @@ export const STATE_POLITICAL_DATA: Record<string, PoliticalData> = {
   },
   "Jharkhand": {
     rulingParty: "JMM-INC",
-    chiefMinister: "Champai Soren",
+    chiefMinister: "Hemant Soren",
     assemblySeats: 81,
     lokSabhaSeats: 14
   },
@@ -135,8 +135,8 @@ export const STATE_POLITICAL_DATA: Record<string, PoliticalData> = {
     lokSabhaSeats: 1
   },
   "Odisha": {
-    rulingParty: "BJD",
-    chiefMinister: "Naveen Patnaik",
+    rulingParty: "BJP",
+    chiefMinister: "Mohan Charan Majhi",
     assemblySeats: 147,
     lokSabhaSeats: 21
   },
@@ -194,17 +194,47 @@ export const STATE_POLITICAL_DATA: Record<string, PoliticalData> = {
     assemblySeats: 294,
     lokSabhaSeats: 42
   },
+  "Andaman and Nicobar Islands": {
+    rulingParty: "President's Rule",
+    chiefMinister: "N/A",
+    assemblySeats: 0,
+    lokSabhaSeats: 1
+  },
+  "Chandigarh": {
+    rulingParty: "President's Rule",
+    chiefMinister: "N/A",
+    assemblySeats: 0,
+    lokSabhaSeats: 1
+  },
+  "Dadra and Nagar Haveli and Daman and Diu": {
+    rulingParty: "President's Rule",
+    chiefMinister: "N/A",
+    assemblySeats: 0,
+    lokSabhaSeats: 2
+  },
   "Delhi": {
     rulingParty: "AAP",
-    chiefMinister: "Arvind Kejriwal",
+    chiefMinister: "Atishi",
     assemblySeats: 70,
     lokSabhaSeats: 7
   },
-  "Jammu & Kashmir": {
-    rulingParty: "President's Rule",
-    chiefMinister: "N/A",
+  "Jammu and Kashmir": {
+    rulingParty: "JKNC",
+    chiefMinister: "Omar Abdullah",
     assemblySeats: 90,
     lokSabhaSeats: 5
+  },
+  "Ladakh": {
+    rulingParty: "President's Rule",
+    chiefMinister: "N/A",
+    assemblySeats: 0,
+    lokSabhaSeats: 1
+  },
+  "Lakshadweep": {
+    rulingParty: "President's Rule",
+    chiefMinister: "N/A",
+    assemblySeats: 0,
+    lokSabhaSeats: 1
   },
   "Puducherry": {
     rulingParty: "AINRC",

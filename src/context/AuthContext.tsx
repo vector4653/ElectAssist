@@ -17,6 +17,7 @@ export interface UserProfile {
   state: string;
   language: string;
   createdAt: string;
+  photoURL?: string;
 }
 
 interface AuthContextType {
@@ -55,7 +56,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 voterId: '',
                 state: '',
                 language: 'en',
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                photoURL: firebaseUser.photoURL || undefined
               };
               await setDoc(doc(db, 'users', firebaseUser.uid), initialProfile);
               setProfile(initialProfile);
@@ -109,7 +111,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             voterId: '',
             state: '',
             language: 'en',
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            photoURL: cred.user.photoURL || undefined
           };
           await setDoc(docRef, initialProfile);
           setProfile(initialProfile);

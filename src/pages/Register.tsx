@@ -90,16 +90,7 @@ export default function Register() {
   const handleGoogle = async () => {
     setError('');
     try {
-      const user = await loginWithGoogle();
-      // For Google sign-in, skip to profile step or go to dashboard
-      await saveProfile(user.uid, {
-        fullName: user.displayName || '',
-        age: 0,
-        voterId: '',
-        state: '',
-        language: 'en',
-        createdAt: new Date().toISOString(),
-      });
+      await loginWithGoogle();
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Google sign-up failed');

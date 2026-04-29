@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Suspense, lazy, useState } from 'react';
 import { STATE_POLITICAL_DATA, PARTY_LOGOS } from '../data/politicalData';
 import OnboardingModal from '../components/OnboardingModal';
+import NewsWidget from '../components/Dashboard/NewsWidget';
 
 const IndiaGlobe = lazy(() => import('../components/IndiaGlobe/IndiaGlobe'));
 
@@ -253,6 +254,10 @@ export default function Dashboard() {
                     <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>Lok Sabha Seats</div>
                     <div style={{ fontSize: '1.8rem', color: '#f1f5f9', fontWeight: 600 }}>{politicalData?.lokSabhaSeats || '—'}</div>
                   </div>
+                </div>
+
+                <div style={{ marginBottom: '32px' }}>
+                  <NewsWidget />
                 </div>
 
                 <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
