@@ -18,6 +18,8 @@ export interface UserProfile {
   language: string;
   createdAt: string;
   photoURL?: string;
+  isNewToPolitics?: boolean;
+  hasCompletedOnboarding?: boolean;
 }
 
 interface AuthContextType {
@@ -57,7 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 state: '',
                 language: 'en',
                 createdAt: new Date().toISOString(),
-                photoURL: firebaseUser.photoURL || undefined
+                photoURL: firebaseUser.photoURL || undefined,
+                isNewToPolitics: undefined,
+                hasCompletedOnboarding: false
               };
               await setDoc(doc(db, 'users', firebaseUser.uid), initialProfile);
               setProfile(initialProfile);
@@ -112,7 +116,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             state: '',
             language: 'en',
             createdAt: new Date().toISOString(),
-            photoURL: cred.user.photoURL || undefined
+            photoURL: cred.user.photoURL || undefined,
+            isNewToPolitics: undefined,
+            hasCompletedOnboarding: false
           };
           await setDoc(docRef, initialProfile);
           setProfile(initialProfile);
