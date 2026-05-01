@@ -4,25 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-const INDIAN_STATES = [
-  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat",
-  "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
-  "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan",
-  "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-  "Delhi", "Jammu & Kashmir", "Puducherry"
-];
-
-const LANGUAGES = [
-  { code: 'en', label: 'English' },
-  { code: 'hi', label: 'हिंदी (Hindi)' },
-  { code: 'mr', label: 'मराठी (Marathi)' },
-  { code: 'bn', label: 'বাংলা (Bengali)' },
-  { code: 'gu', label: 'ગુજરાતી (Gujarati)' },
-  { code: 'kn', label: 'ಕನ್ನಡ (Kannada)' },
-  { code: 'ml', label: 'മലയാളം (Malayalam)' },
-  { code: 'ta', label: 'தமிழ் (Tamil)' },
-  { code: 'te', label: 'తెలుగు (Telugu)' }
-];
+import { INDIAN_STATES, LANGUAGES } from '../i18n';
 
 export default function OnboardingModal() {
   const { t, i18n } = useTranslation();
@@ -130,10 +112,10 @@ export default function OnboardingModal() {
             >
               <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🤔</div>
               <h2 style={{ fontSize: '1.8rem', color: '#f8fafc', marginBottom: '16px' }}>
-                Are you new to politics?
+                {t('onboarding.new_to_politics')}
               </h2>
               <p style={{ color: '#94a3b8', fontSize: '0.95rem', marginBottom: '32px' }}>
-                We can help you understand the Indian political landscape with our AI assistant.
+                {t('onboarding.new_to_politics_desc')}
               </p>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -143,7 +125,7 @@ export default function OnboardingModal() {
                   className="btn-primary"
                   style={{ width: '100%', justifyContent: 'center', padding: '14px' }}
                 >
-                  Yes, I'd like help understanding
+                  {t('onboarding.yes_help')}
                 </button>
                 <button
                   onClick={() => handleInitialChoice(false)}
@@ -161,7 +143,7 @@ export default function OnboardingModal() {
                   onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
                   onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}
                 >
-                  No, I'm already familiar
+                  {t('onboarding.no_familiar')}
                 </button>
               </div>
             </motion.div>
@@ -227,7 +209,7 @@ export default function OnboardingModal() {
                     required
                   >
                     {LANGUAGES.map(lang => (
-                      <option key={lang.code} value={lang.code}>{lang.label}</option>
+                      <option key={lang.code} value={lang.code}>{lang.nativeName} ({lang.name})</option>
                     ))}
                   </select>
                 </div>

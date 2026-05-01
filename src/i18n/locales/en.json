@@ -12,7 +12,20 @@
     "title": "Vote Smart. Vote Informed.",
     "subtitle": "Your AI-powered assistant for navigating Indian elections — from finding candidates to locating your polling booth.",
     "cta": "Get Started",
-    "learn_more": "Learn More"
+    "learn_more": "Learn More",
+    "candidate_info": "Candidate Info",
+    "booth_finder": "Booth Finder",
+    "reminders": "Reminders"
+  },
+  "assistant": {
+    "title": "ElectAssist AI",
+    "full_power": "Full Power Mode",
+    "default_greeting": "Hi {{name}}! I'm your ElectAssist AI. I noticed you're interested in learning more about Indian politics. Where would you like to start? I can explain how elections work, the difference between Rajya Sabha and Lok Sabha, or how you can get your voter ID.",
+    "error_insights": "Sorry, I couldn't get those insights right now.",
+    "error_connection": "Sorry, I'm having trouble connecting right now. Please make sure your API key is configured correctly.",
+    "input_placeholder": "Type your message...",
+    "finish": "Finish",
+    "initial_state_query": "Tell me more about the political situation in {{state}}."
   },
   "how_it_works": {
     "title": "How It Works",
@@ -113,7 +126,41 @@
     "not_provided": "Not provided",
     "language": "Language",
     "age": "Age",
-    "years": "{{count}} years"
+    "years": "{{count}} years",
+    "ai_assistant": "AI Assistant",
+    "ai_insights": "AI Insights",
+    "chief_minister": "Chief Minister",
+    "ruling_party": "Ruling Party",
+    "assembly_seats": "Assembly Seats",
+    "lok_sabha_seats": "Lok Sabha Seats"
+  },
+  "onboarding": {
+    "title": "Complete Your Profile",
+    "subtitle": "Please provide a few details so we can customize your dashboard.",
+    "new_to_politics": "Are you new to politics?",
+    "new_to_politics_desc": "We can help you understand the Indian political landscape with our AI assistant.",
+    "yes_help": "Yes, I'd like help understanding",
+    "no_familiar": "No, I'm already familiar",
+    "age": "Age",
+    "state": "State / Union Territory",
+    "language": "Preferred Language",
+    "voter_id": "Voter ID (Optional)",
+    "save": "Save Profile",
+    "error_age": "You must be at least 18 years old to vote.",
+    "error_state": "Please select your state."
+  },
+  "edit_profile": {
+    "title": "Edit Profile",
+    "full_name": "Full Name",
+    "age": "Age",
+    "voter_id": "Voter ID",
+    "state": "State / Union Territory",
+    "language": "Preferred Language",
+    "save": "Save Profile",
+    "saving": "Saving...",
+    "logout": "Logout",
+    "error_name": "Full name is required.",
+    "error_image": "Please select an image file."
   },
   "globe": {
     "loading_map": "Loading India Map…",
@@ -124,5 +171,9 @@
     "click_state": "🖱️ Click a state to view constituencies",
     "constituency": "Constituency: {{name}}",
     "state": "State: {{name}}"
+  },
+  "news": {
+    "title": "Live Political Updates",
+    "live": "LIVE"
   }
 }

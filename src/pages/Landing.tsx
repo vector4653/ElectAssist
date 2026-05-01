@@ -114,12 +114,12 @@ export default function Landing() {
             }}
           >
             {[
-              { icon: '📋', label: 'Candidate Info' },
-              { icon: '📍', label: 'Booth Finder' },
-              { icon: '🗓️', label: 'Reminders' },
+              { icon: '📋', key: 'candidate_info' },
+              { icon: '📍', key: 'booth_finder' },
+              { icon: '🗓️', key: 'reminders' },
             ].map((item, i) => (
               <motion.div
-                key={item.label}
+                key={item.key}
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, delay: i * 0.5 }}
                 className="card"
@@ -133,7 +133,7 @@ export default function Landing() {
                 }}
               >
                 <span style={{ fontSize: '1.5rem' }}>{item.icon}</span>
-                {item.label}
+                {t(`hero.${item.key}`)}
               </motion.div>
             ))}
           </motion.div>

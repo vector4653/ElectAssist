@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { getGeminiResponse } from '../services/geminiService';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import { useTranslation } from 'react-i18next';
+import { translateText } from '../services/translationService';
 
 interface Message {
   role: 'user' | 'model';
@@ -19,6 +21,7 @@ interface AssistantPanelProps {
 }
 
 export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, onToggleMaximize }: AssistantPanelProps) {
+  const { t, i18n } = useTranslation();
   const { profile, user, saveProfile } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -29,18 +32,18 @@ export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, 
   useEffect(() => {
     const initChat = async () => {
       if (messages.length === 0 && profile) {
-        const defaultPrompt = `Hi ${profile.fullName || 'there'}! I'm your ElectAssist AI. I noticed you're interested in learning more about Indian politics. Where would you like to start? I can explain how elections work, the difference between Rajya Sabha and Lok Sabha, or how you can get your voter ID.`;
+        const defaultPrompt = t('assistant.default_greeting', { name: profile.fullName || 'there' });
         
         if (initialMessage) {
           const userMsg: Message = { role: 'user', parts: [{ text: initialMessage }] };
           setMessages([userMsg]);
           setIsLoading(true);
           try {
-            const response = await getGeminiResponse(initialMessage, []);
+            const response = await getGeminiResponse(initialMessage, [], i18n.language);
             setMessages(prev => [...prev, { role: 'model', parts: [{ text: response }] }]);
           } catch (error) {
             console.error("Initial Gemini Error:", error);
-            setMessages(prev => [...prev, { role: 'model', parts: [{ text: "Sorry, I couldn't get those insights right now." }] }]);
+            setMessages(prev => [...prev, { role: 'model', parts: [{ text: t('assistant.error_insights') }] }]);
           } finally {
             setIsLoading(false);
           }
@@ -51,7 +54,7 @@ export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, 
     };
     
     initChat();
-  }, [profile, initialMessage]);
+  }, [profile, initialMessage, i18n.language, t]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -64,15 +67,16 @@ export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, 
 
     const userMessage: Message = { role: 'user', parts: [{ text: input }] };
     setMessages(prev => [...prev, userMessage]);
+    const currentInput = input;
     setInput('');
     setIsLoading(true);
 
     try {
-      const response = await getGeminiResponse(input, messages);
+      const response = await getGeminiResponse(currentInput, messages, i18n.language);
       setMessages(prev => [...prev, { role: 'model', parts: [{ text: response }] }]);
     } catch (error: any) {
       console.error("Gemini Error:", error);
-      setMessages(prev => [...prev, { role: 'model', parts: [{ text: "Sorry, I'm having trouble connecting right now. Please make sure your API key is configured correctly." }] }]);
+      setMessages(prev => [...prev, { role: 'model', parts: [{ text: t('assistant.error_connection') }] }]);
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +123,7 @@ export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, 
       {isPanel && isMaximized && (
         <div style={{
           position: 'absolute',
-          top: '16px',
+          top: '20px',
           right: '24px',
           display: 'flex',
           gap: '12px',
@@ -181,8 +185,8 @@ export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#10b981', boxShadow: '0 0 10px #10b981' }} />
           <div>
-            <h2 style={{ fontSize: '1.2rem', color: '#f8fafc', fontWeight: 700, margin: 0 }}>ElectAssist AI</h2>
-            {isMaximized && <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Full Power Mode</span>}
+            <h2 style={{ fontSize: '1.2rem', color: '#f8fafc', fontWeight: 700, margin: 0 }}>{t('assistant.title')}</h2>
+            {isMaximized && <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{t('assistant.full_power')}</span>}
           </div>
         </div>
 
@@ -238,7 +242,7 @@ export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, 
                 className="btn-primary"
                 style={{ padding: '8px 20px', fontSize: '0.9rem' }}
               >
-                Finish
+                {t('assistant.finish')}
               </button>
             )}
           </div>
@@ -332,7 +336,7 @@ export function AssistantPanel({ isPanel, onClose, initialMessage, isMaximized, 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Type your message..."
+            placeholder={t('assistant.input_placeholder')}
             style={{
               flex: 1,
               background: 'rgba(15, 23, 42, 0.8)',

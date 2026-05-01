@@ -30,6 +30,7 @@ interface PolygonGroup {
 
 interface IndiaGlobeProps {
   userState?: string;
+  selectedState?: string | null;
   onStateSelect?: (state: string | null) => void;
 }
 
@@ -51,13 +52,13 @@ function parseFeatures(
   const map = new Map<string, PolygonGroup>();
 
   for (const feature of features) {
-    const name = (feature.properties[nameProp] as string) ?? '';
+    const name = (feature.properties[nameProp] as string)?.trim() ?? '';
     if (!name) continue;
 
     if (!map.has(name)) {
       map.set(name, {
         name,
-        parentState: parentProp ? (feature.properties[parentProp] as string) : undefined,
+        parentState: parentProp ? (feature.properties[parentProp] as string)?.trim() : undefined,
         rings: [],
       });
     }
@@ -172,6 +173,7 @@ function MapFills({
   userState,
   isStateLevel,
   hoveredEntity,
+  selectedState,
   onHover,
   onClick,
 }: {
@@ -179,6 +181,7 @@ function MapFills({
   userState?: string;
   isStateLevel: boolean;
   hoveredEntity: string | null;
+  selectedState?: string | null;
   onHover: (name: string | null) => void;
   onClick?: (name: string) => void;
 }) {
@@ -188,6 +191,7 @@ function MapFills({
     <group>
       {meshes.map(({ key, geometry, name, isUser }) => {
         const isHovered = hoveredEntity === name;
+        const isSelected = selectedState === name;
         return (
           <mesh
             key={key}
@@ -205,9 +209,9 @@ function MapFills({
             }}
           >
             <meshBasicMaterial
-              color={isUser ? '#ff9933' : isHovered ? '#60a5fa' : '#1e3a8a'}
+              color={isSelected ? '#22c55e' : isUser ? '#ff9933' : isHovered ? '#60a5fa' : '#1e3a8a'}
               transparent
-              opacity={isUser ? 0.5 : isHovered ? 0.3 : 0.12}
+              opacity={isSelected ? 0.55 : isUser ? 0.5 : isHovered ? 0.3 : 0.12}
               side={THREE.DoubleSide}
               depthWrite={false}
             />
@@ -398,119 +402,120 @@ function InteractiveScene({
   const savedCameraPosRef = useRef<THREE.Vector3 | null>(null);
   const isReturningCameraRef = useRef(false);
 
+  // Compute centroid + scale for the selected state
   const { selectedCentroid, dynamicScale } = useMemo(() => {
-    if (!selectedState || stateGroups.length === 0) return { selectedCentroid: null, dynamicScale: 2.8 };
-    const group = stateGroups.find(g => g.name === selectedState);
-    if (!group) return { selectedCentroid: null, dynamicScale: 2.8 };
-    
-    let latSum = 0, lngSum = 0, count = 0;
-    let minLat = Infinity, maxLat = -Infinity;
-    let minLng = Infinity, maxLng = -Infinity;
-    
-    group.rings.forEach(ring => {
-      ring.forEach(([lng, lat]) => {
-        latSum += lat;
-        lngSum += lng;
-        count++;
-        if (lat < minLat) minLat = lat;
-        if (lat > maxLat) maxLat = lat;
-        if (lng < minLng) minLng = lng;
-        if (lng > maxLng) maxLng = lng;
-      });
-    });
-    
-    if (count === 0) return { selectedCentroid: null, dynamicScale: 2.8 };
-    
-    const latDiff = maxLat - minLat;
-    const lngDiff = maxLng - minLng;
-    const maxDiff = Math.max(latDiff, lngDiff);
-    
-    // Scale inversely proportional to the bounding box size
-    let scale = 22 / maxDiff; 
-    // Clamp between 1.5 (huge states) and 40 (tiny states like Delhi)
-    scale = Math.max(1.5, Math.min(scale, 40));
+    if (!selectedState || stateGroups.length === 0) return { selectedCentroid: null, dynamicScale: 1 };
+    const group = stateGroups.find(g => g.name.toLowerCase() === selectedState.toLowerCase());
+    if (!group || group.rings.length === 0) return { selectedCentroid: null, dynamicScale: 1 };
 
+    let latSum = 0, lngSum = 0, count = 0;
+    let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+    group.rings.forEach(ring => ring.forEach(([lng, lat]) => {
+      latSum += lat; lngSum += lng; count++;
+      if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
+      if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
+    }));
+    if (count === 0) return { selectedCentroid: null, dynamicScale: 1 };
+
+    const maxDiff = Math.max(maxLat - minLat, maxLng - minLng);
+    const scale = Math.max(1, Math.min(15 / (maxDiff || 1), 15));
     return {
-      selectedCentroid: latLngToVector3(latSum/count, lngSum/count, GLOBE_RADIUS, 0),
-      dynamicScale: scale
+      selectedCentroid: latLngToVector3(latSum / count, lngSum / count, GLOBE_RADIUS, 0),
+      dynamicScale: scale,
     };
   }, [selectedState, stateGroups]);
 
-  // When a state is selected, filter out its districts
-  const detachedDistricts = useMemo(() => {
+  // Districts for selected state; fall back to state rings if empty
+  const detachedGroups = useMemo(() => {
     if (!selectedState) return [];
-    return districtGroups.filter((g) => g.parentState === selectedState);
-  }, [districtGroups, selectedState]);
+    const districts = districtGroups.filter(g => g.parentState?.toLowerCase() === selectedState.toLowerCase());
+    if (districts.length > 0) return districts;
+    // Fallback: use the state's own rings so the view is never blank
+    const stateGroup = stateGroups.find(g => g.name.toLowerCase() === selectedState.toLowerCase());
+    return stateGroup ? [stateGroup] : [];
+  }, [districtGroups, stateGroups, selectedState]);
 
-  // Disable rotation when a state is selected, but keep zoom enabled
+  const manualZoomRef = useRef(1);
+
+  // Handle camera lock / unlock
   useEffect(() => {
-    if (controlsRef.current) {
-      controlsRef.current.enabled = true; // Ensure it's enabled (fixes HMR state bugs)
-      controlsRef.current.enableRotate = !selectedState;
+    if (!controlsRef.current) return;
+    
+    // Disable rotate and zoom when state is selected
+    controlsRef.current.enableRotate = !selectedState;
+    controlsRef.current.enableZoom = !selectedState;
 
-      if (selectedState) {
-        // Save the camera position when entering the 2D view
-        if (!savedCameraPosRef.current) {
-          savedCameraPosRef.current = controlsRef.current.object.position.clone();
-        }
-        isReturningCameraRef.current = false;
-      } else {
-        // Trigger a smooth return when dismissing
-        isReturningCameraRef.current = true;
+    if (selectedState) {
+      if (!savedCameraPosRef.current) {
+        savedCameraPosRef.current = controlsRef.current.object.position.clone();
       }
+      // Move camera to a fixed optimal distance for 2D view
+      const targetPos = controlsRef.current.object.position.clone().normalize().multiplyScalar(4.5);
+      controlsRef.current.object.position.copy(targetPos);
+      controlsRef.current.update();
+      manualZoomRef.current = 1; // Reset zoom for new state
+    } else {
+      isReturningCameraRef.current = true;
     }
   }, [selectedState]);
 
-  // Animation loop
+  const { gl } = useThree();
+
+  // Manual zoom listener for 2D state (affects object scale, not camera)
+  // Attached only to the canvas element to prevent scrolling side-panels from zooming the map
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (selectedState) {
+        const delta = e.deltaY * -0.001;
+        manualZoomRef.current = Math.min(Math.max(manualZoomRef.current + delta, 0.5), 4);
+      }
+    };
+    const canvas = gl.domElement;
+    canvas.addEventListener('wheel', handleWheel, { passive: true });
+    return () => canvas.removeEventListener('wheel', handleWheel);
+  }, [selectedState, gl]);
+
   useFrame((state) => {
-    // Smoothly return the camera to its original distance
+    // Smoothly return camera on deselect
     if (isReturningCameraRef.current && savedCameraPosRef.current) {
+      if (controlsRef.current) controlsRef.current.enabled = false; // Disable controls during return
       state.camera.position.lerp(savedCameraPosRef.current, 0.1);
-      if (controlsRef.current) controlsRef.current.update();
-      if (state.camera.position.distanceTo(savedCameraPosRef.current) < 0.05) {
+      if (state.camera.position.distanceTo(savedCameraPosRef.current) < 0.01) {
         isReturningCameraRef.current = false;
         savedCameraPosRef.current = null;
+        if (controlsRef.current) {
+          controlsRef.current.enabled = true;
+          controlsRef.current.update();
+        }
       }
     }
 
-    // If a state is selected, the main globe hides, and the selected state group rotates 
-    // to face the camera and scales up. This avoids fighting OrbitControls.
+    // Shrink/restore main globe
     if (mainGlobeRef.current) {
-      const targetScale = selectedState ? new THREE.Vector3(0.001, 0.001, 0.001) : new THREE.Vector3(1, 1, 1);
-      mainGlobeRef.current.scale.lerp(targetScale, 0.08);
-      mainGlobeRef.current.visible = mainGlobeRef.current.scale.x > 0.05 || !selectedState;
+      const target = selectedState ? 0.001 : 1;
+      mainGlobeRef.current.scale.lerp(new THREE.Vector3(target, target, target), 0.1);
+      mainGlobeRef.current.visible = mainGlobeRef.current.scale.x > 0.01;
     }
 
+    // Animate detached state into view
     if (flattenRef.current && detachedStateRef.current) {
       if (selectedState && selectedCentroid) {
-        // Find rotation needed to move centroid to face the camera
-        const currentCentroid = selectedCentroid.clone();
         const targetPoint = state.camera.position.clone().normalize();
-        
         const q = new THREE.Quaternion().setFromUnitVectors(
-          currentCentroid.normalize(),
+          selectedCentroid.clone().normalize(),
           targetPoint
         );
+        flattenRef.current.quaternion.slerp(state.camera.quaternion, 0.1);
+        flattenRef.current.scale.lerp(new THREE.Vector3(1, 1, 0.01), 0.1);
 
-        // Parent container faces the camera and squashes the Z axis to 2D
-        const parentTargetQuat = state.camera.quaternion.clone();
-        flattenRef.current.quaternion.slerp(parentTargetQuat, 0.08);
-        flattenRef.current.scale.lerp(new THREE.Vector3(1, 1, 0.005), 0.08);
-
-        // Child object rotates so its centroid points at the camera
-        // qLocal = parentInv * q
-        const parentInv = parentTargetQuat.clone().invert();
-        const qLocal = parentInv.multiply(q);
-
-        detachedStateRef.current.quaternion.slerp(qLocal, 0.08);
-        detachedStateRef.current.scale.lerp(new THREE.Vector3(dynamicScale, dynamicScale, dynamicScale), 0.08);
+        const qLocal = state.camera.quaternion.clone().invert().multiply(q);
+        detachedStateRef.current.quaternion.slerp(qLocal, 0.1);
+        
+        // Base scale * multiplier * manual scroll zoom
+        const s = dynamicScale * 0.8 * manualZoomRef.current;
+        detachedStateRef.current.scale.lerp(new THREE.Vector3(s, s, s), 0.1);
       } else {
-        // Return to original state
-        flattenRef.current.quaternion.slerp(new THREE.Quaternion(), 0.08);
-        flattenRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.08);
-
-        detachedStateRef.current.quaternion.slerp(new THREE.Quaternion(), 0.08);
-        detachedStateRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.08);
+        flattenRef.current.scale.lerp(new THREE.Vector3(0.001, 0.001, 0.001), 0.1);
       }
     }
   });
@@ -523,8 +528,8 @@ function InteractiveScene({
 
       <GlobeController />
 
-      {/* Main Globe */}
-      <group ref={mainGlobeRef} onClick={() => selectedState && setSelectedState(null)}>
+      {/* Main globe — shrinks away when a state is selected */}
+      <group ref={mainGlobeRef}>
         <GlobeSphere />
         <Atmosphere />
         <Graticule />
@@ -533,6 +538,7 @@ function InteractiveScene({
           userState={userState}
           isStateLevel={true}
           hoveredEntity={selectedState ? null : hoveredEntity}
+          selectedState={selectedState}
           onHover={selectedState ? () => {} : setHoveredEntity}
           onClick={(name) => setSelectedState(name)}
         />
@@ -545,21 +551,22 @@ function InteractiveScene({
         />
       </group>
 
-      {/* Detached State */}
+      {/* Detached state — floats in front of camera when selected */}
       <group ref={flattenRef}>
         <group ref={detachedStateRef}>
           {selectedState && (
             <>
               <MapFills
-                groups={detachedDistricts}
+                groups={detachedGroups}
                 userState={userState}
                 isStateLevel={false}
                 hoveredEntity={hoveredEntity}
+                selectedState={null}
                 onHover={setHoveredEntity}
-                onClick={() => setSelectedState(null)} // click again to dismiss
+                onClick={() => setSelectedState(null)}
               />
               <MapBorders
-                groups={detachedDistricts}
+                groups={detachedGroups}
                 userState={userState}
                 isStateLevel={false}
                 hoveredEntity={hoveredEntity}
@@ -673,7 +680,7 @@ function LoadingOverlay() {
 }
 
 /* ---------- Main Component ---------- */
-export default function IndiaGlobe({ userState, onStateSelect }: IndiaGlobeProps) {
+export default function IndiaGlobe({ userState, selectedState = null, onStateSelect }: IndiaGlobeProps) {
   const { t } = useTranslation();
   const [stateGroups, setStateGroups] = useState<PolygonGroup[]>([]);
   const [districtGroups, setDistrictGroups] = useState<PolygonGroup[]>([]);
@@ -681,7 +688,6 @@ export default function IndiaGlobe({ userState, onStateSelect }: IndiaGlobeProps
   const [error, setError] = useState<string | null>(null);
   
   const [hoveredEntity, setHoveredEntity] = useState<string | null>(null);
-  const [selectedState, setSelectedState] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -693,6 +699,9 @@ export default function IndiaGlobe({ userState, onStateSelect }: IndiaGlobeProps
         const topology = await res.json();
         
         if (!cancelled) {
+          if (!topology.objects || !topology.objects.states || !topology.objects.districts) {
+            throw new Error('Invalid map data format');
+          }
           // Convert TopoJSON to GeoJSON FeatureCollections
           const statesGeo = topojson.feature(topology, topology.objects.states) as unknown as FeatureCollection;
           const districtsGeo = topojson.feature(topology, topology.objects.districts) as unknown as FeatureCollection;
@@ -719,13 +728,6 @@ export default function IndiaGlobe({ userState, onStateSelect }: IndiaGlobeProps
     };
   }, []);
 
-  // Sync state upward
-  useEffect(() => {
-    if (onStateSelect) {
-      onStateSelect(selectedState);
-    }
-  }, [selectedState, onStateSelect]);
-
   if (error) {
     return (
       <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', flexDirection: 'column', gap: '12px' }}>
@@ -735,16 +737,11 @@ export default function IndiaGlobe({ userState, onStateSelect }: IndiaGlobeProps
     );
   }
 
-  // Determine if the currently hovered entity belongs to the user's state
+  // Determine if the currently hovered entity is the user's state
   const isHoveredUser = useMemo(() => {
     if (!hoveredEntity) return false;
-    if (selectedState) {
-      const group = districtGroups.find(g => g.name === hoveredEntity);
-      return group?.parentState === userState;
-    } else {
-      return hoveredEntity === userState;
-    }
-  }, [hoveredEntity, selectedState, userState, districtGroups]);
+    return hoveredEntity === userState;
+  }, [hoveredEntity, userState]);
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', borderRadius: '20px', overflow: 'hidden' }}>
@@ -811,7 +808,7 @@ export default function IndiaGlobe({ userState, onStateSelect }: IndiaGlobeProps
         camera={{ position: [0, 0, 5], fov: 45 }} 
         style={{ background: 'transparent' }} 
         dpr={[1, 2]}
-        onPointerMissed={() => selectedState && setSelectedState(null)}
+        onPointerMissed={() => selectedState && onStateSelect?.(null)}
       >
         {!loading && stateGroups.length > 0 && (
           <InteractiveScene
@@ -821,7 +818,7 @@ export default function IndiaGlobe({ userState, onStateSelect }: IndiaGlobeProps
             hoveredEntity={hoveredEntity}
             setHoveredEntity={setHoveredEntity}
             selectedState={selectedState}
-            setSelectedState={setSelectedState}
+            setSelectedState={(name) => onStateSelect?.(name)}
           />
         )}
       </Canvas>

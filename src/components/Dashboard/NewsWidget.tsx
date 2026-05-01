@@ -60,11 +60,11 @@ export default function NewsWidget() {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
         <span style={{ fontSize: '1.2rem' }}>📰</span>
         <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#f8fafc', margin: 0 }}>
-          Live Political Updates
+          {t('news.title')}
         </h3>
         <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <div style={{ width: 8, height: 8, background: '#ef4444', borderRadius: '50%', animation: 'pulse 2s infinite' }} />
-          <span style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600 }}>LIVE</span>
+          <span style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: 600 }}>{t('news.live')}</span>
         </div>
       </div>
 

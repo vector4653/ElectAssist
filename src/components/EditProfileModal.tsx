@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { INDIAN_STATES, LANGUAGES } from '../i18n';
 
 export default function EditProfileModal({ onClose }: { onClose: () => void }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, profile, saveProfile, logout } = useAuth();
   
   const [fullName, setFullName] = useState(profile?.fullName || '');
@@ -153,7 +153,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '1.6rem', color: '#f8fafc' }}>
-            Edit Profile
+            {t('edit_profile.title')}
           </h2>
           <button 
             onClick={onClose}
@@ -179,7 +179,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
             <div style={{
               position: 'absolute', bottom: 0, width: '100%', background: 'rgba(0,0,0,0.6)', 
               color: 'white', fontSize: '0.7rem', textAlign: 'center', padding: '4px 0'
-            }}>Edit</div>
+            }}>{t('edit_profile.edit_image', 'Edit')}</div>
           </div>
           <input 
             type="file" 
@@ -198,7 +198,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label className="form-label" style={{ color: '#cbd5e1' }}>Full Name *</label>
+            <label className="form-label" style={{ color: '#cbd5e1' }}>{t('edit_profile.full_name')} *</label>
             <input
               type="text"
               className="input-field"
@@ -210,7 +210,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label className="form-label" style={{ color: '#cbd5e1' }}>Age *</label>
+              <label className="form-label" style={{ color: '#cbd5e1' }}>{t('edit_profile.age')} *</label>
               <input
                 type="number"
                 className="input-field"
@@ -222,7 +222,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
               />
             </div>
             <div>
-              <label className="form-label" style={{ color: '#cbd5e1' }}>Voter ID</label>
+              <label className="form-label" style={{ color: '#cbd5e1' }}>{t('edit_profile.voter_id')}</label>
               <input
                 type="text"
                 className="input-field"
@@ -233,7 +233,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="form-label" style={{ color: '#cbd5e1' }}>State / Union Territory *</label>
+            <label className="form-label" style={{ color: '#cbd5e1' }}>{t('edit_profile.state')} *</label>
             <select
               className="input-field"
               value={state}
@@ -248,7 +248,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div>
-            <label className="form-label" style={{ color: '#cbd5e1' }}>Preferred Language *</label>
+            <label className="form-label" style={{ color: '#cbd5e1' }}>{t('edit_profile.language')} *</label>
             <select
               className="input-field"
               value={language}
@@ -268,7 +268,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
               onClick={handleLogout}
               style={{ flex: 1, justifyContent: 'center', borderColor: 'rgba(239,68,68,0.5)', color: '#ef4444' }}
             >
-              Logout
+              {t('edit_profile.logout')}
             </button>
             <button
               type="submit"
@@ -276,7 +276,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
               disabled={loading}
               style={{ flex: 2, justifyContent: 'center' }}
             >
-              {loading ? 'Saving...' : 'Save Profile'}
+              {loading ? t('edit_profile.saving') : t('edit_profile.save')}
             </button>
           </div>
         </form>

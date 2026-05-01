@@ -1,65 +1,50 @@
-const API_KEY = import.meta.env.VITE_GOOGLE_CLOUD_API_KEY;
-const API_URL = 'https://translation.googleapis.com/language/translate/v2';
+const API_KEY = import.meta.env.VITE_GOOGLE_TRANSLATE_API_KEY;
+const TRANSLATE_URL = `https://translation.googleapis.com/language/translate/v2`;
 
+/** Translate a single string. Returns the original on failure. */
+export async function translateText(text: string, targetLanguage: string): Promise<string>;
+/** Translate an array of strings. Returns the originals on failure. */
+export async function translateText(text: string[], targetLanguage: string): Promise<string[]>;
 export async function translateText(
   text: string | string[],
   targetLanguage: string
 ): Promise<string | string[]> {
-  // If the target language is English or matches the source (assuming English), skip translation.
-  if (!targetLanguage || targetLanguage === 'en') {
+  // If translating to English (or no change needed), skip the API call
+  if (!targetLanguage || targetLanguage.startsWith('en')) {
     return text;
   }
 
-  // If no API key is provided, use the Mock Service to simulate translation
-  if (!API_KEY || API_KEY === 'your_key_here') {
-    console.log('[Mock Translation] Translating to:', targetLanguage);
-    
-    // Simulate network latency (800ms)
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    const isArray = Array.isArray(text);
-    const textsToTranslate = isArray ? text : [text];
-
-    const mockTranslated = textsToTranslate.map(t => {
-      // Very basic mock translation visually indicating the target language
-      return `[${targetLanguage.toUpperCase()}] ${t}`;
-    });
-
-    return isArray ? mockTranslated : mockTranslated[0];
+  if (!API_KEY) {
+    console.warn('Translation API key is missing – using original text.');
+    return text;
   }
 
-  // REAL API CALL
-  try {
-    const isArray = Array.isArray(text);
-    const queries = isArray ? text : [text];
-    
-    const params = new URLSearchParams();
-    params.append('key', API_KEY);
-    params.append('target', targetLanguage);
-    queries.forEach(q => params.append('q', q));
+  const inputs = Array.isArray(text) ? text : [text];
 
-    const response = await fetch(`${API_URL}?${params.toString()}`, {
+  try {
+    const response = await fetch(`${TRANSLATE_URL}?key=${API_KEY}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        q: inputs,
+        target: targetLanguage,
+        format: 'text',
+      }),
     });
 
     if (!response.ok) {
-      throw new Error(`Google Translation API Error: ${response.statusText}`);
+      const errorData = await response.json();
+      throw new Error(errorData?.error?.message || 'Translation failed');
     }
 
     const data = await response.json();
-    
-    if (data && data.data && data.data.translations) {
-      const results = data.data.translations.map((t: any) => t.translatedText);
-      return isArray ? results : results[0];
-    }
-    
-    throw new Error('Invalid response format from Translation API');
+    const translations: string[] = data.data.translations.map(
+      (t: { translatedText: string }) => t.translatedText
+    );
+
+    return Array.isArray(text) ? translations : translations[0];
   } catch (error) {
-    console.error('Translation failed:', error);
-    // Fallback to original text on failure
-    return text;
+    console.error('Error in translationService:', error);
+    return text; // graceful fallback – return original
   }
 }
