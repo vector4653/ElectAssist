@@ -11,7 +11,7 @@ export const getGeminiResponse = async (prompt: string, history: { role: "user" 
     const genAI = new GoogleGenerativeAI(currentApiKey);
     
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash-exp",
+      model: "gemini-2.5-flash",
     });
 
     // Prepare the parts
