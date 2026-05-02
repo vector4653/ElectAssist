@@ -5,7 +5,7 @@ import { getGeminiResponse } from '../services/geminiService';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { useTranslation } from 'react-i18next';
-import { translateText } from '../services/translationService';
+
 
 interface Message {
   role: 'user' | 'model';

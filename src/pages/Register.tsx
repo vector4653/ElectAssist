@@ -4,8 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { INDIAN_STATES, STATE_LANGUAGE_MAP, LANGUAGES } from '../i18n';
+import { getFriendlyErrorMessage } from '../utils/firebaseErrors';
 
 const VOTER_ID_REGEX = /^[A-Z]{3}\d{7}$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Register() {
   const { t, i18n } = useTranslation();
@@ -31,6 +33,7 @@ export default function Register() {
   const [detectedLang, setDetectedLang] = useState('');
 
   const validateStep1 = () => {
+    if (!EMAIL_REGEX.test(email)) { setError('Please enter a valid email address.'); return false; }
     if (password.length < 6) { setError(t('register.password_weak')); return false; }
     if (password !== confirmPassword) { setError(t('register.password_mismatch')); return false; }
     setError('');
@@ -80,7 +83,7 @@ export default function Register() {
       });
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Registration failed');
+      setError(getFriendlyErrorMessage(err));
       setStep(1);
     } finally {
       setLoading(false);
@@ -93,7 +96,7 @@ export default function Register() {
       await loginWithGoogle();
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Google sign-up failed');
+      setError(getFriendlyErrorMessage(err));
     }
   };
 

@@ -3,6 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { getFriendlyErrorMessage } from '../utils/firebaseErrors';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
   const { t } = useTranslation();
@@ -16,13 +19,17 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!EMAIL_REGEX.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
       await login(email, password);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -34,7 +41,7 @@ export default function Login() {
       await loginWithGoogle();
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Google login failed');
+      setError(getFriendlyErrorMessage(err));
     }
   };
 

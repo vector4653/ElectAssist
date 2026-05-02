@@ -17,8 +17,8 @@ export const PARTY_LOGOS: Record<string, string> = {
   "NPP": "https://commons.wikimedia.org/wiki/Special:FilePath/Book_symbol.svg",
   "ZPM": "https://commons.wikimedia.org/wiki/Special:FilePath/A_hat_or_topi.png",
   "NDPP": "https://commons.wikimedia.org/wiki/Special:FilePath/Globe_symbol.svg",
-  "SKM": "https://commons.wikimedia.org/wiki/Special:FilePath/Table_lamp_symbol.svg",
-  "DMK": "https://en.wikipedia.org/wiki/Special:FilePath/Dravida_Munnetra_Kazhagam_logo.png",
+  "SKM": "https://commons.wikimedia.org/wiki/Special:FilePath/Symbol_SKM.png",
+  "DMK": "https://commons.wikimedia.org/wiki/Special:FilePath/Dravida_Munnetra_Kazhagam_logo.png",
   "TMC": "https://commons.wikimedia.org/wiki/Special:FilePath/All_India_Trinamool_Congress_flag.svg",
   "AINRC": "https://commons.wikimedia.org/wiki/Special:FilePath/Jug_symbol.svg",
   "JKNC": "https://commons.wikimedia.org/wiki/Special:FilePath/Flag_of_Jammu_and_Kashmir_National_Conference.svg",
@@ -45,8 +45,8 @@ export const STATE_POLITICAL_DATA: Record<string, PoliticalData> = {
     lokSabhaSeats: 14
   },
   "Bihar": {
-    rulingParty: "JDU-BJP",
-    chiefMinister: "Nitish Kumar",
+    rulingParty: "BJP",
+    chiefMinister: "Samrat Choudhary",
     assemblySeats: 243,
     lokSabhaSeats: 40
   },
@@ -106,7 +106,7 @@ export const STATE_POLITICAL_DATA: Record<string, PoliticalData> = {
   },
   "Maharashtra": {
     rulingParty: "Mahayuti (Shiv Sena, BJP, NCP)",
-    chiefMinister: "Eknath Shinde",
+    chiefMinister: "Devendra Fadnavis",
     assemblySeats: 288,
     lokSabhaSeats: 48
   },

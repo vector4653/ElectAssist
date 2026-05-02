@@ -30,7 +30,7 @@ export default function OnboardingModal() {
         isNewToPolitics: isNew
       });
       if (isNew) {
-        navigate('/assistant');
+        navigate('/roadmap');
       } else {
         setStep(2);
       }

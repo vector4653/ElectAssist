@@ -1,33 +1,17 @@
-import React, { Component, Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { STATE_POLITICAL_DATA, PARTY_LOGOS } from '../data/politicalData';
 import OnboardingModal from '../components/OnboardingModal';
-import NewsWidget from '../components/Dashboard/NewsWidget';
+
 import { AssistantPanel } from './Assistant';
+import { COMPARISON_DATA, ISSUE_CATEGORIES } from '../data/comparisonData';
 
 const IndiaGlobe = lazy(() => import('../components/IndiaGlobe/IndiaGlobe'));
 
-/** Catches any render error in NewsWidget so it doesn't crash the whole page */
-class NewsErrorBoundary extends Component<{ children: React.ReactNode }, { hasError: boolean }> {
-  constructor(props: { children: React.ReactNode }) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError() { return { hasError: true }; }
-  componentDidCatch(err: unknown) { console.error('NewsWidget error:', err); }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div style={{ padding: '16px', color: '#94a3b8', fontSize: '0.9rem', textAlign: 'center' }}>
-          📰 News unavailable
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
+
 
 function GlobeLoader() {
   const { t } = useTranslation();
@@ -43,10 +27,18 @@ function GlobeLoader() {
 export default function Dashboard() {
   const { user, profile } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [assistantMessage, setAssistantMessage] = useState<string | undefined>(undefined);
   const [isAssistantMaximized, setIsAssistantMaximized] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const politicalData = selectedState ? STATE_POLITICAL_DATA[selectedState] : null;
   const partyLogo = politicalData ? PARTY_LOGOS[politicalData.rulingParty] : null;
@@ -57,6 +49,12 @@ export default function Dashboard() {
     : t('dashboard.welcome');
 
   const needsOnboarding = profile && !profile.hasCompletedOnboarding;
+
+  const [activeTab, setActiveTab] = useState<'issue' | 'candidate'>('issue');
+  const [activeIssueCategory, setActiveIssueCategory] = useState('Agriculture');
+
+  const comparisonData = (selectedState && COMPARISON_DATA[selectedState]) || COMPARISON_DATA['Default'];
+  const currentIssue = comparisonData.issues.find(i => i.category === activeIssueCategory) || comparisonData.issues[0];
 
   const openAssistant = (message?: string) => {
     setAssistantMessage(message);
@@ -111,6 +109,9 @@ export default function Dashboard() {
                   </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                  <button onClick={() => navigate('/roadmap')} className="btn-primary" style={{ padding: '8px 20px', fontSize: '0.85rem', background: 'linear-gradient(135deg, #6366f1, #3b82f6)' }}>
+                    <span>🗺️</span> View Roadmap
+                  </button>
                   <button onClick={() => openAssistant()} className="btn-outline" style={{ padding: '8px 20px', background: 'rgba(59, 130, 246, 0.05)', fontSize: '0.85rem' }}>
                     <span>🤖</span> {t('dashboard.ai_assistant')}
                   </button>
@@ -142,16 +143,17 @@ export default function Dashboard() {
                 <motion.div
                   key="assistant-panel"
                   initial={{ opacity: 0, x: -40 }}
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                    width: isAssistantMaximized ? '100%' : '400px',
-                    height: '100%',
-                    position: isAssistantMaximized ? 'fixed' : 'relative',
-                    top: isAssistantMaximized ? 0 : 'auto',
-                    left: isAssistantMaximized ? 0 : 'auto',
-                    zIndex: isAssistantMaximized ? 1000 : 100,
-                  }}
+                animate={{
+                  opacity: 1,
+                  x: 0,
+                  width: isAssistantMaximized ? '100%' : (isMobile ? '100%' : '400px'),
+                  height: isAssistantMaximized ? '100%' : (isMobile ? '80vh' : '100%'),
+                  position: (isAssistantMaximized || isMobile) ? 'fixed' : 'relative',
+                  top: isAssistantMaximized ? 0 : (isMobile ? 'auto' : 'auto'),
+                  bottom: (isMobile && !isAssistantMaximized) ? 0 : 'auto',
+                  left: isAssistantMaximized ? 0 : (isMobile ? 0 : 'auto'),
+                  zIndex: (isAssistantMaximized || isMobile) ? 1000 : 100,
+                }}
                   exit={{ opacity: 0, x: -40 }}
                   transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                   style={{
@@ -186,12 +188,12 @@ export default function Dashboard() {
                   position: selectedState ? 'fixed' : 'relative',
                   top: selectedState ? 0 : 'auto',
                   left: selectedState ? 0 : 'auto',
-                  width: selectedState ? '55%' : undefined,
-                  height: selectedState ? '100vh' : '100%',
+                  width: selectedState ? (isMobile ? '100%' : '55%') : undefined,
+                  height: selectedState ? (isMobile ? '35vh' : '100vh') : '100%',
                   background: 'radial-gradient(circle at center, #0f172a 0%, #020617 100%)',
                   border: selectedState ? 'none' : '1px solid rgba(255,255,255,0.05)',
                   boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-                  zIndex: selectedState ? 50 : 10,
+                  zIndex: selectedState ? (isMobile ? 1 : 50) : 10,
                   transition: 'all 0.5s ease-in-out',
                 }}
               >
@@ -260,30 +262,44 @@ export default function Dashboard() {
           {selectedState && !isAssistantMaximized && (
             <motion.div
               key={`drawer-${selectedState}`}
-              initial={{ opacity: 0, x: 60 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 60 }}
+              initial={{ opacity: 0, y: isMobile ? 100 : 0, x: isMobile ? 0 : 60 }}
+              animate={{ opacity: 1, y: 0, x: 0 }}
+              exit={{ opacity: 0, y: isMobile ? 100 : 0, x: isMobile ? 0 : 60 }}
               transition={{ duration: 0.45, ease: 'easeOut' }}
               style={{
                 position: 'fixed',
-                top: 0,
+                top: isMobile ? 'auto' : 0,
+                bottom: 0,
                 right: 0,
-                width: '45%',
-                height: '100vh',
+                width: isMobile ? '100%' : '45%',
+                height: isMobile ? '68vh' : '100vh',
                 background: 'rgba(15, 23, 42, 0.98)',
-                borderLeft: '1px solid rgba(241,245,249,0.08)',
-                padding: '100px 40px 60px',
+                borderLeft: isMobile ? 'none' : '1px solid rgba(241,245,249,0.08)',
+                borderTop: isMobile ? '1px solid rgba(241,245,249,0.15)' : 'none',
+                padding: isMobile ? '16px 20px 40px' : '60px 40px 60px',
                 display: 'flex',
                 flexDirection: 'column',
                 overflowY: 'auto',
-                zIndex: 50,
-                boxShadow: '-10px 0 40px rgba(0,0,0,0.5)',
+                zIndex: 100,
+                boxShadow: isMobile ? '0 -10px 40px rgba(0,0,0,0.5)' : '-10px 0 40px rgba(0,0,0,0.5)',
                 backdropFilter: 'blur(20px)',
+                borderRadius: isMobile ? '32px 32px 0 0' : '0',
               }}
             >
+              {/* Mobile Drag Handle */}
+              {isMobile && (
+                <div style={{
+                  width: '40px',
+                  height: '4px',
+                  background: 'rgba(255,255,255,0.2)',
+                  borderRadius: '2px',
+                  margin: '12px auto 20px',
+                  flexShrink: 0
+                }} />
+              )}
               {/* Header row */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                <h2 style={{ fontSize: '2.5rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>{selectedState}</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: isMobile ? '20px' : '8px' }}>
+                <h2 style={{ fontSize: isMobile ? '1.8rem' : '2.5rem', fontWeight: 800, color: '#f8fafc', margin: 0 }}>{selectedState}</h2>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <button
                     onClick={() => openAssistant(t('assistant.initial_state_query', { state: selectedState }))}
@@ -317,7 +333,7 @@ export default function Dashboard() {
               />
 
               {/* Stats grid */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '28px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '40px' }}>
                 {[
                   { label: t('dashboard.chief_minister'), value: politicalData?.chiefMinister || '—', icon: '👤' },
                   {
@@ -345,21 +361,146 @@ export default function Dashboard() {
                 ))}
               </div>
 
-              {/* News */}
-              <div style={{ marginBottom: '28px' }}>
-                <NewsErrorBoundary>
-                  <NewsWidget />
-                </NewsErrorBoundary>
-              </div>
+              {/* Compare & Decide Section */}
+              <div style={{ marginTop: '20px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '40px' }}>
+                <h3 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#f8fafc', marginBottom: '24px' }}>Compare & Decide</h3>
+                
+                {/* Tabs */}
+                <div style={{ 
+                  display: 'flex', 
+                  background: 'rgba(15, 23, 42, 0.4)', 
+                  padding: '4px', 
+                  borderRadius: '12px', 
+                  marginBottom: '32px',
+                  border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                  <button 
+                    onClick={() => setActiveTab('issue')}
+                    style={{
+                      flex: 1, padding: '10px', borderRadius: '8px', cursor: 'pointer', border: 'none', fontSize: '0.9rem', fontWeight: 600,
+                      background: activeTab === 'issue' ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                      color: activeTab === 'issue' ? '#818cf8' : '#94a3b8',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    Issue Comparison
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('candidate')}
+                    style={{
+                      flex: 1, padding: '10px', borderRadius: '8px', cursor: 'pointer', border: 'none', fontSize: '0.9rem', fontWeight: 600,
+                      background: activeTab === 'candidate' ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                      color: activeTab === 'candidate' ? '#818cf8' : '#94a3b8',
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    Candidate Background
+                  </button>
+                </div>
 
-              {/* Upcoming features teaser */}
-              <div style={{ background: 'rgba(59, 130, 246, 0.08)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', marginTop: 'auto' }}>
-                <h3 style={{ color: '#60a5fa', marginBottom: '10px', fontSize: '1rem', fontWeight: 600 }}>{t('dashboard.upcoming_features')}</h3>
-                <ul style={{ color: '#94a3b8', paddingLeft: '20px', lineHeight: 1.8, fontSize: '0.9rem', margin: 0 }}>
-                  <li>{t('dashboard.feature_live')}</li>
-                  <li>{t('dashboard.feature_demo')}</li>
-                  <li>{t('dashboard.feature_trends')}</li>
-                </ul>
+                {activeTab === 'issue' ? (
+                  <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '24px' }}>
+                    {/* Issue Filter */}
+                    <div style={{ width: isMobile ? '100%' : '140px', flexShrink: 0 }}>
+                      {isMobile ? (
+                        <select 
+                          value={activeIssueCategory}
+                          onChange={(e) => setActiveIssueCategory(e.target.value)}
+                          style={{
+                            width: '100%', padding: '12px', borderRadius: '10px', background: 'rgba(30, 41, 59, 0.5)',
+                            border: '1px solid rgba(255,255,255,0.1)', color: '#f8fafc', fontSize: '0.9rem'
+                          }}
+                        >
+                          {ISSUE_CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                        </select>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          {ISSUE_CATEGORIES.map(cat => (
+                            <button
+                              key={cat}
+                              onClick={() => setActiveIssueCategory(cat)}
+                              style={{
+                                textAlign: 'left', padding: '10px 14px', borderRadius: '8px', cursor: 'pointer', border: 'none', fontSize: '0.85rem',
+                                background: activeIssueCategory === cat ? 'rgba(255,255,255,0.05)' : 'transparent',
+                                color: activeIssueCategory === cat ? '#f8fafc' : '#64748b',
+                                transition: 'all 0.2s ease'
+                              }}
+                            >
+                              {cat}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Comparison Grid */}
+                    <div style={{ flex: 1 }}>
+                      {currentIssue ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '16px' }}>
+                          {[currentIssue.partyA, currentIssue.partyB].map((p, idx) => (
+                            <motion.div 
+                              key={idx}
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              style={{ 
+                                background: 'rgba(30, 41, 59, 0.4)', padding: '24px', borderRadius: '20px', 
+                                border: '1px solid rgba(255,255,255,0.05)', display: 'flex', flexDirection: 'column', gap: '12px'
+                              }}
+                            >
+                              <div style={{ fontSize: '0.75rem', color: '#6366f1', fontWeight: 700, textTransform: 'uppercase' }}>{p.name}</div>
+                              <p style={{ fontSize: '0.95rem', color: '#cbd5e1', lineHeight: 1.6, margin: 0 }}>{p.stance}</p>
+                              <div style={{ marginTop: 'auto', paddingTop: '12px' }}>
+                                <a href="#" style={{ fontSize: '0.75rem', color: '#64748b', textDecoration: 'none', fontStyle: 'italic' }}>
+                                  Source: {p.source}
+                                </a>
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', padding: '40px' }}>No specific data for this category.</div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '20px' }}>
+                    {comparisonData.candidates.map((c, idx) => (
+                      <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        style={{ 
+                          background: 'rgba(30, 41, 59, 0.3)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.05)',
+                          overflow: 'hidden', display: 'flex', flexDirection: 'column'
+                        }}
+                      >
+                        <div style={{ padding: '24px', background: 'rgba(99, 102, 241, 0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                          <h4 style={{ margin: 0, fontSize: '1.2rem', color: '#f8fafc' }}>{c.name}</h4>
+                          <div style={{ fontSize: '0.8rem', color: '#818cf8', marginTop: '4px' }}>{c.party}</div>
+                        </div>
+                        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          {[
+                            { icon: '🎓', label: 'Education', value: c.education },
+                            { icon: '💼', label: 'Experience', value: c.experience },
+                            { icon: '🛡️', label: 'Criminal Cases', value: c.criminalCases, isWarning: c.criminalCases > 0 },
+                            { icon: '💰', label: 'Assets', value: c.assets },
+                          ].map((stat, sIdx) => (
+                            <div key={sIdx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '0.85rem' }}>
+                                <span>{stat.icon}</span>
+                                <span>{stat.label}</span>
+                              </div>
+                              <div style={{ flex: 1, borderBottom: '1px dotted rgba(255,255,255,0.1)', margin: '0 8px', alignSelf: 'flex-end', marginBottom: '4px' }} />
+                              <div style={{ fontSize: '0.9rem', fontWeight: 600, color: stat.isWarning ? '#f87171' : '#cbd5e1', textAlign: 'right' }}>
+                                {stat.value}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
@@ -375,10 +516,10 @@ export default function Dashboard() {
             onClick={() => openAssistant()}
             style={{
               position: 'fixed',
-              bottom: selectedState ? '90px' : '32px',
-              right: selectedState ? 'calc(45% + 32px)' : '32px',
-              width: '64px',
-              height: '64px',
+              bottom: selectedState ? (isMobile ? '68vh' : '80px') : '32px',
+              right: selectedState ? (isMobile ? '24px' : 'calc(45% + 32px)') : '32px',
+              width: isMobile ? '56px' : '64px',
+              height: isMobile ? '56px' : '64px',
               borderRadius: '20px',
               background: 'var(--gradient-saffron)',
               color: 'white',

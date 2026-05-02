@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Assistant from './pages/Assistant';
+import Roadmap from './pages/Roadmap';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -42,6 +43,11 @@ function AppRoutes() {
         <Route path="/assistant" element={
           <ProtectedRoute>
             <Assistant />
+          </ProtectedRoute>
+        } />
+        <Route path="/roadmap" element={
+          <ProtectedRoute>
+            <Roadmap />
           </ProtectedRoute>
         } />
         {/* Temporary test route – remove after verification */}
