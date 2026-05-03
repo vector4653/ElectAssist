@@ -108,7 +108,7 @@ export default function Dashboard() {
                     {t('dashboard.explore_globe')}
                   </p>
                 </div>
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: isMobile ? '8px' : '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <button onClick={() => navigate('/roadmap')} className="btn-primary" style={{ padding: '8px 20px', fontSize: '0.85rem', background: 'linear-gradient(135deg, #6366f1, #3b82f6)' }}>
                     <span>🗺️</span> View Roadmap
                   </button>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient (Dark Slate to Deep Blue) -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e3a8a" />
+    </linearGradient>
+    
+    <!-- Ballot Box Front Gradient (Bright Blue) -->
+    <linearGradient id="boxGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    
+    <!-- Rounded Mask for the Tricolor -->
+    <clipPath id="ribbonClip">
+      <rect x="156" y="348" width="200" height="24" rx="12" />
+    </clipPath>
+  </defs>
+  
+  <!-- Outer App Icon Shape -->
+  <rect x="16" y="16" width="480" height="480" rx="110" fill="url(#bgGrad)" />
+  
+  <!-- Ballot Paper Sliding In -->
+  <rect x="156" y="96" width="200" height="240" rx="16" fill="#f8fafc" />
+  
+  <!-- The Checkmark -->
+  <path d="M 216 180 L 248 212 L 312 148" fill="none" stroke="#2563eb" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Box Slot Shadow to create depth -->
+  <rect x="120" y="248" width="272" height="16" rx="8" fill="#020617" opacity="0.4" />
+  
+  <!-- The Front of the Ballot Box -->
+  <path d="M 96 256 H 416 C 442.5 256 464 277.5 464 304 V 392 C 464 418.5 442.5 440 416 440 H 96 C 69.5 440 48 418.5 48 392 V 304 C 48 277.5 69.5 256 96 256 Z" fill="url(#boxGrad)" />
+  
+  <!-- Indian Tricolor Accent -->
+  <g clip-path="url(#ribbonClip)">
+    <rect x="156" y="348" width="200" height="8" fill="#FF9933" />
+    <rect x="156" y="356" width="200" height="8" fill="#FFFFFF" />
+    <rect x="156" y="364" width="200" height="8" fill="#138808" />
+    <!-- Miniature Ashoka Chakra -->
+    <circle cx="256" cy="360" r="3.5" fill="#000080" />
+  </g>
+  
+  <!-- AI / Digital Sparks -->
+  <!-- Primary Spark (Top Right) -->
+  <path d="M 380 60 Q 396 96 432 112 Q 396 128 380 164 Q 364 128 328 112 Q 364 96 380 60 Z" fill="#7dd3fc" />
+  <!-- Secondary Spark (Mid Right) -->
+  <path d="M 440 160 Q 448 176 464 184 Q 448 192 440 208 Q 432 192 416 184 Q 432 176 440 160 Z" fill="#bae6fd" opacity="0.8" />
+  <!-- Tertiary Spark (Mid Left) -->
+  <path d="M 120 100 Q 128 116 144 124 Q 128 132 120 148 Q 112 132 96 124 Q 112 116 120 100 Z" fill="#7dd3fc" opacity="0.6" />
+  
+</svg>

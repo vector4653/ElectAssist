@@ -11,13 +11,19 @@ export default function Navbar() {
   const { user, profile } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const location = useLocation();
   const isLanding = location.pathname === '/';
 
   useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const navBg = scrolled || !isLanding
@@ -37,7 +43,7 @@ export default function Navbar() {
         left: 0,
         right: 0,
         zIndex: 100,
-        padding: '0 24px',
+        padding: isMobile ? '0 12px' : '0 24px',
         height: '72px',
         display: 'flex',
         alignItems: 'center',
@@ -54,12 +60,13 @@ export default function Navbar() {
         <span
           style={{
             fontFamily: 'var(--font-heading)',
-            fontSize: '1.4rem',
+            fontSize: isMobile ? '1.1rem' : '1.4rem',
             fontWeight: 700,
             background: 'var(--gradient-saffron)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
+            display: isMobile && window.innerWidth < 380 ? 'none' : 'block'
           }}
         >
           {t('app_name')}
@@ -67,7 +74,7 @@ export default function Navbar() {
       </Link>
 
       {/* Right side */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '12px' }}>
         <LanguageSelector />
 
         {user ? (
@@ -104,7 +111,7 @@ export default function Navbar() {
               <button
                 id="nav-login-btn"
                 className="btn-outline"
-                style={{ padding: '8px 20px', fontSize: '0.9rem' }}
+                style={{ padding: isMobile ? '6px 12px' : '8px 20px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}
               >
                 {t('nav.login')}
               </button>
@@ -113,7 +120,7 @@ export default function Navbar() {
               <button
                 id="nav-register-btn"
                 className="btn-primary"
-                style={{ padding: '8px 20px', fontSize: '0.9rem' }}
+                style={{ padding: isMobile ? '6px 12px' : '8px 20px', fontSize: isMobile ? '0.8rem' : '0.9rem' }}
               >
                 {t('nav.register')}
               </button>

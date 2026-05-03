@@ -6,8 +6,8 @@ import { useAuth } from '../context/AuthContext';
 import { AssistantPanel } from './Assistant';
 
 export default function Roadmap() {
-  const { t } = useTranslation();
-  const { profile } = useAuth();
+  useTranslation();
+  useAuth();
   const navigate = useNavigate();
 
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
@@ -43,14 +43,14 @@ export default function Roadmap() {
       <div className="container" style={{ paddingTop: '100px', flex: 1, display: 'flex', gap: '24px', zIndex: 1, position: 'relative', minHeight: 0 }}>
         
         {/* Animated Path Line - Now outside the scroller so it stays visible */}
-        <div style={{ position: 'absolute', top: '200px', bottom: '200px', left: '60px', width: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', zIndex: 0 }}>
+        <div style={{ position: 'absolute', top: '200px', bottom: '200px', left: isMobile ? '24px' : '60px', width: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', zIndex: 0 }}>
           <motion.div style={{ width: '100%', height: pathHeight, background: 'var(--gradient-saffron)', borderRadius: '2px', transformOrigin: 'top' }} />
         </div>
 
         {/* Main Content Area */}
         <div ref={scrollRef} className="no-scrollbar" style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '32px', overflowY: 'auto', paddingRight: '12px', position: 'relative' }}>
           
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginLeft: '80px' }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginLeft: isMobile ? '40px' : '80px' }}>
             <h1 style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 800, marginBottom: '8px', background: 'linear-gradient(135deg, #f8fafc, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Welcome to Your Voting Journey
             </h1>
@@ -66,11 +66,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '70vh',
@@ -140,11 +140,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px', 
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px', 
               display: 'flex',
               flexDirection: 'column',
               minHeight: '70vh',
@@ -212,11 +212,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px', 
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px', 
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -301,11 +301,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '120vh', 
@@ -399,11 +399,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -481,11 +481,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -559,11 +559,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -641,11 +641,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -724,11 +724,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '120vh',
@@ -806,11 +806,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '150vh', 
@@ -902,11 +902,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -984,11 +984,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -1064,11 +1064,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
@@ -1147,11 +1147,11 @@ export default function Roadmap() {
             viewport={{ root: scrollRef, margin: "-15% 0px -15% 0px" }}
             transition={{ duration: 0.6 }}
             style={{ 
-              marginLeft: '80px',
+              marginLeft: isMobile ? '40px' : '80px',
               background: 'rgba(30, 41, 59, 0.4)', 
               border: '1px solid rgba(255,255,255,0.05)', 
               borderRadius: '24px', 
-              padding: '120px 60px 80px',
+              padding: isMobile ? '80px 24px 40px' : '120px 60px 80px',
               display: 'flex',
               flexDirection: 'column',
               minHeight: '90vh',
