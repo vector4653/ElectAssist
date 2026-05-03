@@ -3,7 +3,7 @@
 
 **ElectAssist** is an AI-powered civic assistant website built for Indian voters. It helps citizens navigate elections — from understanding candidates and manifestos to finding polling booths. Developed for the **2026 Hackathon**, it leverages the **Google Cloud Ecosystem** for intelligent, multilingual guidance.
 
-🌐 **Live:** Coming soon
+🌐 **Live:** https://electassist-992195201421.us-central1.run.app/
 
 ---
 
