@@ -1,4 +1,4 @@
-<img width="1061" height="553" alt="image" src="https://github.com/user-attachments/assets/3ced1830-6077-4a4a-9d28-0722dc4d5bea" />
+
 # 🗳️ ElectAssist — Smart Voting Companion
 
 **ElectAssist** is an AI-powered civic assistant website built for Indian voters. It helps citizens navigate elections — from understanding candidates and manifestos to finding polling booths. Developed for the **2026 Hackathon**, it leverages the **Google Cloud Ecosystem** for intelligent, multilingual guidance.
