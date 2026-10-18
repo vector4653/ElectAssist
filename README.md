@@ -1,149 +1,92 @@
+# 🗳️ ElectAssist — Smart Civic & Voting Companion for India
 
-# 🗳️ ElectAssist — Smart Voting Companion
+> An intelligent, multilingual, and unbiased digital voting companion designed to help Indian citizens make informed democratic decisions.
 
-**ElectAssist** is an AI-powered civic assistant website built for Indian voters. It helps citizens navigate elections — from understanding candidates and manifestos to finding polling booths. Developed for the **2026 Hackathon**, it leverages the **Google Cloud Ecosystem** for intelligent, multilingual guidance.
-
-🌐 **Live:** https://elect-assist-six.vercel.app/
----
-
-## 🎯 Hackathon Criteria Alignment
-
-### 1. Smart, Dynamic Assistant
-Built with **Gemini 1.5 Pro**, the assistant uses **RAG (Retrieval-Augmented Generation)** to ingest live election manifestos and official PDFs, providing summarized, cited, and unbiased answers to specific user queries.
-
-### 2. Logical Decision Making (User Context)
-The website utilizes a **Contextual Router** that adapts the UI and information flow based on:
-* **Voter Persona:** First-time voters see "Registration 101," while seasoned voters get "Constituency Performance" deep-dives.
-* **Geospatial Context:** Automatically detects constituency to serve localized candidate data and polling logistics.
-
-### 3. Effective Use of Google Services
-* **Google Civic Information API:** Source of truth for candidate data and polling locations.
-* **Google Maps Platform:** Provides real-time navigation and wait-time estimates for booths.
-* **Gemini API (Vertex AI):** Powers the core conversational intelligence and manifesto summarization.
-* **Google Calendar API:** Enables one-tap reminders for registration and voting deadlines.
-* **Google Cloud Translation:** Ensures inclusivity across 9+ regional languages.
-* **Firebase:** Authentication (Email/Password + Google Sign-In) and Firestore database.
-
-### 4. Practical & Real-World Usability
-* **Offline-First (PWA):** Essential for low-connectivity areas near polling booths.
-* **Multilingual:** Supports English, Hindi, Bengali, Tamil, Telugu, Marathi, Gujarati, Kannada, and Malayalam.
-* **Low-Cognitive Load UI:** Information is broken down into interactive cards with smooth scroll animations.
-
-### 5. Clean & Maintainable Code
-* **TypeScript-First:** Ensures type safety across the entire data flow.
-* **Modular Layered Architecture:** Separate concerns for API Services, UI Components, and AI Logic.
+🌐 **Live Website:** [elect-assist-six.vercel.app](https://elect-assist-six.vercel.app/)  
+📬 **Contact & Contributions:** [ritviknambiar09@gmail.com](mailto:ritviknambiar09@gmail.com)
 
 ---
 
-## 🛠️ Tech Stack
+## 💡 What is ElectAssist?
 
-* **Frontend:** React 19, TypeScript, Tailwind CSS v4, Framer Motion.
-* **Backend:** Firebase (Firestore & Authentication).
-* **AI/ML:** Gemini 1.5 Pro, LangChain (for RAG orchestration).
-* **Internationalization:** react-i18next (9 Indian languages).
-* **Build Tool:** Vite.
+India has over 968 million registered voters across 28 states and 8 union territories, speaking dozens of languages and evaluating thousands of candidates across diverse political manifestos. However, citizens often face several critical challenges during elections:
+- **Information Overload & Bias:** Scattered, partisan, or unverified claims make it difficult to evaluate candidates objectively.
+- **Language Barriers:** Official manifestos and policy debates are often unavailable in regional vernaculars.
+- **First-Time Voter Friction:** Young and newly eligible citizens struggle to understand the voting process, constitutional roles, and registration steps.
+- **Polling Logistics:** Finding designated polling booths and verified candidate backgrounds remains cumbersome.
 
----
-
-## 📂 Project Structure
-
-```text
-├── src/
-│   ├── components/      # Reusable UI components (Navbar, ScrollSection, LanguageSelector)
-│   ├── context/         # React Context (AuthContext)
-│   ├── firebase/        # Firebase configuration
-│   ├── i18n/            # Internationalization setup
-│   │   ├── locales/     # Translation JSON files (en, hi, bn, ta, te, mr, gu, kn, ml)
-│   │   └── index.ts     # i18next config + state-language mapping
-│   ├── pages/           # Page components (Landing, Login, Register, Dashboard)
-│   ├── App.tsx          # Root component with routing
-│   ├── main.tsx         # Entry point
-│   └── index.css        # Global styles & design system
-├── public/              # Static assets
-├── .env.example         # Template for environment variables
-├── index.html           # HTML template with Google Fonts
-└── README.md
-```
+**ElectAssist** bridges this gap by acting as a modern, AI-powered civic platform that provides unbiased political intelligence, sector-wise policy breakdowns, geospatial exploration, and instant multilingual conversational support.
 
 ---
 
-## ⚡ Getting Started
+## ✨ Key Features
 
-### Prerequisites
-* Node.js v20+
-* A Firebase project (see Firebase Setup below)
+### 1. 🤖 ElectAssist AI — Civic Copilot
+- Powered by advanced Gemini models running through a secure, private serverless backend.
+- Provides neutral, cited, and factual explanations of electoral processes, constitutional mechanisms, and party manifestos.
+- Strictly adheres to non-partisan civic assistance and automatically converses in the voter's preferred Indian language.
 
-### Installation
+### 2. 🇮🇳 Interactive 3D India Globe & State Governance View
+- Built with Three.js and React Three Fiber to visualize India's political landscape in 3D.
+- Ingests TopoJSON boundary maps with dynamic zoom and state selection.
+- Provides detailed overviews of state governments, current ruling coalitions, chief ministers, and assembly seat distributions.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/vector4653/ElectAssist.git
-    cd ElectAssist
-    ```
+### 3. 🗺️ Personalized Voter Persona Journeys
+- **First-Time Voters (`/roadmap`):** An interactive step-by-step roadmap tailored for new voters. Demystifies voting eligibility, registration requirements, voter rights, and the significance of their vote.
+- **Seasoned Voters (`/dashboard`):** An analytical dashboard highlighting key governance metrics, upcoming elections, and candidate tracking.
 
-2.  **Install dependencies:**
-    ```bash
-    npm install
-    ```
+### 4. 📊 Sector-by-Sector Manifesto & Issue Comparison
+- Compares major political parties side-by-side across crucial national sectors:
+  - **🌾 Agriculture & Farmers' Welfare**
+  - **💼 Economy & Taxation**
+  - **🏥 Healthcare & Public Health**
+  - **🎓 Education & Skilling**
+  - **🏗️ Infrastructure & Transportation**
+  - **👷 Employment & Labor Reforms**
 
-3.  **Environment Setup:**
-    Copy `.env.example` to `.env` and fill in your Firebase credentials:
-    ```bash
-    cp .env.example .env
-    ```
+### 5. 🌐 Native Multilingual Support (9 Indian Languages)
+ElectAssist is built from the ground up for linguistic accessibility, supporting real-time translation across 9 languages:
+- **English** (`en`)
+- **हिन्दी** (Hindi - `hi`)
+- **বাংলা** (Bengali - `bn`)
+- **தமிழ்** (Tamil - `ta`)
+- **తెలుగు** (Telugu - `te`)
+- **मराठी** (Marathi - `mr`)
+- **ગુજરાતી** (Gujarati - `gu`)
+- **ಕನ್ನಡ** (Kannada - `kn`)
+- **മലയാളം** (Malayalam - `ml`)
 
-4.  **Run Development Server:**
-    ```bash
-    npm run dev
-    ```
-
----
-
-## 🔥 Firebase Setup
-
-If you're new to Firebase, follow these steps:
-
-1.  Go to [Firebase Console](https://console.firebase.google.com/) and click **"Create a project"**.
-2.  Name your project (e.g., `electassist`) and follow the prompts.
-3.  In the project dashboard, click the **Web icon (</>) ** to add a web app.
-4.  Register the app and copy the config values into your `.env` file:
-    ```env
-    VITE_FIREBASE_API_KEY=your_api_key
-    VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-    VITE_FIREBASE_PROJECT_ID=your_project_id
-    VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
-    VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-    VITE_FIREBASE_APP_ID=your_app_id
-    ```
-5.  **Enable Authentication:**
-    - Go to **Build → Authentication → Sign-in method**
-    - Enable **Email/Password** and **Google** providers
-6.  **Enable Firestore:**
-    - Go to **Build → Firestore Database**
-    - Click **Create database** → Start in **test mode**
+### 6. 🔐 Secure & Modern Cloud Architecture
+- **Firebase Authentication & Firestore:** Seamless Google Sign-In and email login with persistent voter profile synchronization.
+- **Serverless Backend Security:** All AI model interactions run through a protected serverless API (`/api/gemini`) hosted on Vercel, ensuring API credentials remain confidential and protected from browser exposure.
 
 ---
 
-## 🌐 Supported Languages
+## 🛠️ Technology Stack
 
-| Language | Code | Native Name |
-|----------|------|-------------|
-| English | `en` | English |
-| Hindi | `hi` | हिन्दी |
-| Bengali | `bn` | বাংলা |
-| Tamil | `ta` | தமிழ் |
-| Telugu | `te` | తెలుగు |
-| Marathi | `mr` | मराठी |
-| Gujarati | `gu` | ગુજરાતી |
-| Kannada | `kn` | ಕನ್ನಡ |
-| Malayalam | `ml` | മലയാളം |
+| Layer | Technologies |
+|---|---|
+| **Frontend Framework** | React 19, TypeScript 6.0, Vite 8 |
+| **Styling & Design** | Tailwind CSS v4, Framer Motion |
+| **3D & Geospatial** | Three.js, React Three Fiber, Drei, TopoJSON |
+| **Artificial Intelligence** | Google Gemini (2.5 Flash / Flash Latest) via Generative AI SDK |
+| **Authentication & Database** | Firebase Authentication, Cloud Firestore |
+| **Localization (i18n)** | react-i18next with regional language detection |
+| **Cloud Hosting & Serverless** | Vercel Serverless Functions |
 
 ---
 
-## 🛡️ Security & Ethics
-* **Data Privacy:** Personal voter data is stored locally and never used to train external AI models.
-* **Neutrality:** The AI is strictly constrained to source-only responses to prevent political hallucination or bias.
+## 🤝 Interested in Contributing?
+
+ElectAssist is an open civic tech initiative dedicated to strengthening democratic participation. Whether you are interested in:
+- Integrating official electoral datasets (e.g., from [indiandataproject.org](https://indiandataproject.org/) or [data.gov.in](https://data.gov.in/)),
+- Improving UI/UX accessibility and mobile responsiveness,
+- Connecting real-time election news feeds and Google Search Grounding to the AI assistant, or
+- Helping expand vernacular language support and polling booth locator features:
+
+Please reach out directly to **Ritvik Nambiar** at:  
+📧 **[ritviknambiar09@gmail.com](mailto:ritviknambiar09@gmail.com)**
 
 ---
 
-**Developed with ❤️ for India | 2026 Hackathon Project**
+**Developed with ❤️ for Indian Citizens and Democratic Empowerment.**
