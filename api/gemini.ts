@@ -24,17 +24,6 @@ export default async function handler(req: any, res: any) {
     });
   }
 
-  // Diagnostic endpoint to check available models for this API key
-  if (req.query?.action === "listModels" || req.body?.action === "listModels") {
-    try {
-      const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-      const listData = await listRes.json();
-      return res.status(listRes.status).json(listData);
-    } catch (err: any) {
-      return res.status(500).json({ error: err?.message || "Failed to list models" });
-    }
-  }
-
   // Allow only POST requests for chat
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed. Use POST." });
