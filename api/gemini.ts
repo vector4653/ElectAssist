@@ -1,5 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Ambient declaration for Vercel Serverless Node runtime
+declare const process: {
+  env: Record<string, string | undefined>;
+};
+
 export default async function handler(req: any, res: any) {
   // Allow only POST requests
   if (req.method !== "POST") {
