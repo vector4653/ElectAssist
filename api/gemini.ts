@@ -7,9 +7,11 @@ declare const process: {
 
 const CANDIDATE_MODELS = [
   "gemini-2.5-flash",
-  "gemini-2.0-flash",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-pro",
+  "gemini-flash-latest",
+  "gemini-2.5-flash-lite",
+  "gemini-flash-lite-latest",
+  "gemini-2.5-pro",
+  "gemini-pro-latest",
 ];
 
 export default async function handler(req: any, res: any) {
@@ -55,7 +57,7 @@ export default async function handler(req: any, res: any) {
       validHistory.shift();
     }
 
-    let lastError: any = null;
+    const attemptErrors: Record<string, string> = {};
     let text = "";
 
     for (const modelName of CANDIDATE_MODELS) {
@@ -74,13 +76,16 @@ export default async function handler(req: any, res: any) {
         text = response.text();
         if (text) break;
       } catch (err: any) {
-        lastError = err;
+        attemptErrors[modelName] = err?.message || String(err);
         console.warn(`Model ${modelName} failed, attempting next candidate:`, err?.message || err);
       }
     }
 
     if (!text) {
-      throw lastError || new Error("Failed to generate response with candidate models.");
+      return res.status(500).json({
+        error: "All candidate models failed.",
+        details: attemptErrors,
+      });
     }
 
     return res.status(200).json({ text });
