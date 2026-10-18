@@ -27,7 +27,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
-  if (!user || !profile) return null;
+  if (!user) return null;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,13 +97,14 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
     setLoading(true);
     try {
       await saveProfile(user.uid, {
-        ...profile,
         fullName,
         age: parseInt(age),
         voterId,
         state,
         language,
-        photoURL
+        photoURL,
+        createdAt: profile?.createdAt || new Date().toISOString(),
+        hasCompletedOnboarding: profile?.hasCompletedOnboarding ?? true,
       });
       // Changing language preference updates the app instantly
       if (language !== i18n.language) {
