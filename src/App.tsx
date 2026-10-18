@@ -52,6 +52,8 @@ function AppRoutes() {
         } />
         {/* Temporary test route – remove after verification */}
         <Route path="/globe-test" element={<Dashboard />} />
+        <Route path="/candidates" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

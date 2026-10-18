@@ -126,7 +126,7 @@ export default function EditProfileModal({ onClose }: { onClose: () => void }) {
     <div style={{
       position: 'fixed',
       inset: 0,
-      zIndex: 1000,
+      zIndex: 2000,
       background: 'rgba(2, 6, 23, 0.85)',
       backdropFilter: 'blur(8px)',
       display: 'flex',

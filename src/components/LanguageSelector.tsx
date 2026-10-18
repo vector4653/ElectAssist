@@ -49,7 +49,7 @@ export default function LanguageSelector() {
             padding: '8px 0',
             minWidth: '180px',
             boxShadow: 'var(--shadow-lg)',
-            zIndex: 1000,
+            zIndex: 1200,
             backdropFilter: 'blur(20px)',
           }}
         >
