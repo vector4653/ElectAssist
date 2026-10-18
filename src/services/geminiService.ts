@@ -55,21 +55,36 @@ export const getGeminiResponse = async (
   const genAI = new GoogleGenerativeAI(localKey);
   const systemInstruction = `You are ElectAssist, a helpful political assistant for Indian citizens. Help users understand the political system. Be neutral and factual. IMPORTANT: Respond in the language requested by the user. The user's preferred language code is: ${language}. If the language is not English, translate your entire response into that language.`;
 
-  const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-flash",
-    systemInstruction,
-  });
+  const candidateModels = [
+    "gemini-2.5-flash",
+    "gemini-2.0-flash",
+    "gemini-1.5-flash-latest",
+  ];
 
   const validHistory = [...history];
   while (validHistory.length > 0 && validHistory[0]?.role !== "user") {
     validHistory.shift();
   }
 
-  const chat = model.startChat({
-    history: validHistory,
-  });
+  let localError: any = null;
+  for (const modelName of candidateModels) {
+    try {
+      const model = genAI.getGenerativeModel({
+        model: modelName,
+        systemInstruction,
+      });
 
-  const result = await chat.sendMessage(prompt);
-  const response = await result.response;
-  return response.text();
+      const chat = model.startChat({
+        history: validHistory,
+      });
+
+      const result = await chat.sendMessage(prompt);
+      const response = await result.response;
+      return response.text();
+    } catch (err: any) {
+      localError = err;
+    }
+  }
+
+  throw localError || new Error("Failed to generate response from Gemini API.");
 };

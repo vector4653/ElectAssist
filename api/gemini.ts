@@ -5,6 +5,13 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
+const CANDIDATE_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash-latest",
+  "gemini-1.5-pro",
+];
+
 export default async function handler(req: any, res: any) {
   // Allow only POST requests
   if (req.method !== "POST") {
@@ -31,24 +38,39 @@ export default async function handler(req: any, res: any) {
 
     const systemInstruction = `You are ElectAssist, a helpful political assistant for Indian citizens. Help users understand the political system. Be neutral and factual. IMPORTANT: Respond in the language requested by the user. The user's preferred language code is: ${language}. If the language is not English, translate your entire response into that language.`;
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-      systemInstruction,
-    });
-
     // Clean up history to ensure first message is from 'user'
     const validHistory = Array.isArray(history) ? [...history] : [];
     while (validHistory.length > 0 && validHistory[0]?.role !== "user") {
       validHistory.shift();
     }
 
-    const chat = model.startChat({
-      history: validHistory,
-    });
+    let lastError: any = null;
+    let text = "";
 
-    const result = await chat.sendMessage(prompt);
-    const response = await result.response;
-    const text = response.text();
+    for (const modelName of CANDIDATE_MODELS) {
+      try {
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          systemInstruction,
+        });
+
+        const chat = model.startChat({
+          history: validHistory,
+        });
+
+        const result = await chat.sendMessage(prompt);
+        const response = await result.response;
+        text = response.text();
+        if (text) break;
+      } catch (err: any) {
+        lastError = err;
+        console.warn(`Model ${modelName} failed, attempting next candidate:`, err?.message || err);
+      }
+    }
+
+    if (!text) {
+      throw lastError || new Error("Failed to generate response with candidate models.");
+    }
 
     return res.status(200).json({ text });
   } catch (error: any) {
